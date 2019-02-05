@@ -1,0 +1,39 @@
+enum POST_STATUS {
+  DRAFT
+  PENDING_REVIEW
+  PUBLISHED
+}
+
+type PostMeta {
+  published: String!
+}
+
+type Post {
+  content: String!
+  title: String
+  status: POST_STATUS!
+  statuses: [POST_STATUS!]!
+  nullableStatus: POST_STATUS
+  author: Author!
+  meta: PostMeta
+  type: String
+}
+
+type Author {
+  firstName: String!
+  lastName: String
+  age: Int!
+  posts: [Post!]!
+  postMetas: [PostMeta!]
+  nullablePosts: [Post]!
+  numPosts: Int
+  height: Float!
+  weight: Float
+  isActive: Boolean!
+  hasLoggedIn: Boolean
+}
+
+type Query {
+  posts: [Post!]!
+  authors: [Author!]!
+}

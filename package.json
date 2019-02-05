@@ -1,0 +1,42 @@
+{
+  "name": "graphql-codegen-reason-client",
+  "version": "0.0.1-beta.0",
+  "main": "dist/index.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build:ts": "babel src --out-dir dist --extensions \".ts\"",
+    "build:re": "bsb",
+    "generate": "gql-gen",
+    "tester:build": "bsb"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/preset-typescript": "^7.1.0",
+    "@glennsl/bs-jest": "^0.4.7",
+    "@types/graphql": "^14.0.5",
+    "@types/lodash": "^4.14.120",
+    "bs-platform": "^4.0.18",
+    "concurrently": "^4.1.0",
+    "graphql-code-generator": "^0.16.1",
+    "graphql-codegen-core": "^0.16.1",
+    "jest": "^24.0.0",
+    "typescript": "^3.2.2"
+  },
+  "dependencies": {
+    "graphql": "^14.1.1",
+    "lodash": "^4.17.11",
+    "reason": "^3.3.4"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
+    },
+    "testRegex": "/tester/__tests__/.*\\.(ts|js)$"
+  }
+}

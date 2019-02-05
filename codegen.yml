@@ -1,0 +1,9 @@
+overwrite: true
+generates:
+  ./tester/GraphQLTypes.re:
+    schema: ./tester/schema.graphql
+    config:
+      scalars:
+        "DateTime": "string"
+    plugins:
+      - ./dist/index.js

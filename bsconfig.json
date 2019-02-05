@@ -1,0 +1,21 @@
+{
+  "name": "gql-to-reason-tester",
+  "reason": {
+    "react-jsx": 2
+  },
+  "sources": [
+    {
+      "dir": "tester",
+      "subdirs": true
+    }
+  ],
+  "package-specs": {
+    "module": "commonjs",
+    "in-source": true
+  },
+  "namespace": true,
+  "bs-dependencies": ["@glennsl/bs-jest"],
+  "refmt": 3,
+  "suffix": ".bs.js",
+  "bsc-flags": ["-bs-g"]
+}
