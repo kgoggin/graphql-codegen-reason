@@ -6,9 +6,22 @@
     {
       "type": "npm",
       "script": "generate",
-      "problemMatcher": [
-        "$eslint-compact"
-      ]
+      "problemMatcher": ["$eslint-compact"]
+    },
+    {
+      "type": "npm",
+      "script": "build:re",
+      "problemMatcher": ["$ocamlc"]
+    },
+    {
+      "type": "npm",
+      "script": "build:re:watch",
+      "problemMatcher": ["$ocamlc"]
+    },
+    {
+      "type": "npm",
+      "script": "build:ts:watch",
+      "problemMatcher": ["$eslint-compact"]
     }
   ]
 }

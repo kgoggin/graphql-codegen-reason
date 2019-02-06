@@ -1,6 +1,6 @@
 overwrite: true
 generates:
-  ./tester/GraphQLTypes.re:
+  ./tester/generated/GraphQLTypes.re:
     schema: ./tester/schema.graphql
     config:
       scalars:

@@ -5,6 +5,7 @@
 /coverage
 /dist
 /lib
+/generated
 
 # re files
 *.bs.js

@@ -182,6 +182,28 @@ type postStatus_enum = [ | `DRAFT | `PENDING_REVIEW | `PUBLISHED ];
   type post;
   type author;
   type postMeta;
+    type createAuthorInput = {
+    .
+    "firstName": string,
+    "lastName": Js.Nullable.t(string)
+  } and authorWhereUniqueInput = {
+    .
+    "firstName": string
+  } and createConnectAuthor = {
+    .
+    "connect": Js.Nullable.t(authorWhereUniqueInput),
+    "create": Js.Nullable.t(createAuthorInput)
+  } and createPostInput = {
+    .
+    "title": Js.Nullable.t(string),
+    "content": string,
+    "status": string,
+    "maybeStatus": Js.Nullable.t(string),
+    "statuses": Js.Nullable.t(array(string)),
+    "strings": Js.Nullable.t(array(string)),
+    "author": createConnectAuthor,
+    "postTime": string
+  };
     module Query = {
     type t = query;
     let typeName = "Query";
@@ -228,5 +250,29 @@ type postStatus_enum = [ | `DRAFT | `PENDING_REVIEW | `PUBLISHED ];
     let typeName = "PostMeta";
     
   let published: field(t, string) = getString(~fieldName="published", ~typeName);
+  };
+    module CreateAuthorInput = {
+    type t = createAuthorInput;
+    let make = (~firstName, ~lastName=?, ()): t => {
+      "firstName": firstName,"lastName": lastName->Js.Nullable.fromOption
+    }
+  };
+  module AuthorWhereUniqueInput = {
+    type t = authorWhereUniqueInput;
+    let make = (~firstName, ()): t => {
+      "firstName": firstName
+    }
+  };
+  module CreateConnectAuthor = {
+    type t = createConnectAuthor;
+    let make = (~connect=?, ~create=?, ()): t => {
+      "connect": connect->Js.Nullable.fromOption,"create": create->Js.Nullable.fromOption
+    }
+  };
+  module CreatePostInput = {
+    type t = createPostInput;
+    let make = (~title=?, ~content, ~status, ~maybeStatus=?, ~statuses=?, ~strings=?, ~author, ~postTime, ()): t => {
+      "title": title->Js.Nullable.fromOption,"content": content,"status": status->postStatus_enumToJs,"maybeStatus": maybeStatus->Belt.Option.map(postStatus_enumToJs)->Js.Nullable.fromOption,"statuses": statuses->Belt.Option.map(Array.map(postStatus_enumToJs))->Js.Nullable.fromOption,"strings": strings->Js.Nullable.fromOption,"author": author,"postTime": postTime
+    }
   };
   

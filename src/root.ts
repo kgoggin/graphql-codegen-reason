@@ -9,26 +9,9 @@ import {
 import { camelCase, capitalize } from "lodash";
 
 import { head } from "./head";
+import { sanitizeFieldName, ScalarMap, makeEnumTypeName } from "./utils";
+import { writeInputTypeDefs, writeInputModule } from "./input";
 import { ReasonConfig } from ".";
-
-declare type ScalarMap = {
-  [key: string]: string;
-};
-
-const reservedWords = ["type"];
-
-const sanitizeFieldName = (fieldName: string) => {
-  if (reservedWords.includes(fieldName)) {
-    return fieldName + "_";
-  }
-
-  return fieldName;
-};
-
-const makeEnumTypeName = (name: string) => {
-  // appending enum because GraphQL allows enums to share names with common types
-  return camelCase(name) + "_enum";
-};
 
 const makeCustomScalarTypeName = (name: string) => {
   return camelCase(name);
@@ -62,15 +45,7 @@ const scalarMap: ScalarMap = {
   ID: "string"
 };
 
-const getScalarType = (type: string) => {
-  if (scalarMap[type]) {
-    return scalarMap[type];
-  }
-
-  return makeCustomScalarTypeName(type);
-};
-
-const getReasonFieldType = (field: Field) => {
+const getReasonFieldType = (field: Field, scalarMap: ScalarMap) => {
   let underlyingType = "";
   switch (field.fieldType) {
     case "Enum":
@@ -81,7 +56,7 @@ const getReasonFieldType = (field: Field) => {
       underlyingType = camelCase(field.type);
       break;
     case "Scalar":
-      underlyingType = getScalarType(field.type);
+      underlyingType = scalarMap[field.type];
       break;
     default:
       throw new Error(
@@ -149,7 +124,8 @@ const fieldGetter = (field: Field, scalarMap: ScalarMap) => {
 const writeObjectField = (field: Field, scalarMap: ScalarMap) => {
   return `
   let ${sanitizeFieldName(field.name)}: field(t, ${getReasonFieldType(
-    field
+    field,
+    scalarMap
   )}) = ${fieldGetter(field, scalarMap)};`;
 };
 
@@ -182,8 +158,16 @@ export const rootTemplate = (
   `);
   const typeDefs = context.types.map(writeObjectTypeDef).join(`
   `);
-  const modules = context.types.map(type =>
+  const inputTypeDefs = writeInputTypeDefs(context.inputTypes, finalScalarMap);
+  const typeModules = context.types.map(type =>
     writeObjectModule(type, finalScalarMap)
+  ).join(`
+  `);
+
+  console.log("------------------------------------------");
+  console.log(finalScalarMap.DateTime);
+  const inputModules = context.inputTypes.map(type =>
+    writeInputModule(type, finalScalarMap)
   ).join(`
   `);
 
@@ -192,6 +176,8 @@ export const rootTemplate = (
     ${customScalarDefs}
     ${enumDefs}
     ${typeDefs}
-    ${modules}
+    ${inputTypeDefs}
+    ${typeModules}
+    ${inputModules}
   `;
 };

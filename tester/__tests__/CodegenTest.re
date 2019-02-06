@@ -2,7 +2,7 @@ open GraphQLTypes;
 
 open Jest;
 
-describe("codegen", () => {
+describe("parsing JSON", () => {
   describe("Scalars", () => {
     describe("String", () => {
       test("it can parse scalar strings", () => {

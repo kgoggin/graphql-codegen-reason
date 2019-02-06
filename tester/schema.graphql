@@ -1,3 +1,5 @@
+scalar DateTime
+
 enum POST_STATUS {
   DRAFT
   PENDING_REVIEW
@@ -31,6 +33,31 @@ type Author {
   weight: Float
   isActive: Boolean!
   hasLoggedIn: Boolean
+}
+
+input CreateAuthorInput {
+  firstName: String!
+  lastName: String
+}
+
+input AuthorWhereUniqueInput {
+  firstName: String!
+}
+
+input CreateConnectAuthor {
+  connect: AuthorWhereUniqueInput
+  create: CreateAuthorInput
+}
+
+input CreatePostInput {
+  title: String
+  content: String!
+  status: POST_STATUS!
+  maybeStatus: POST_STATUS
+  statuses: [POST_STATUS!]
+  strings: [String!]
+  author: CreateConnectAuthor!
+  postTime: DateTime!
 }
 
 type Query {
