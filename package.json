@@ -1,5 +1,8 @@
 {
   "name": "graphql-codegen-reason-client",
+  "description": "A GraphQL Codegen plugin to generate ReasonML types",
+  "respository": "git@github.com:kgoggin/graphql-codegen-reason.git",
+  "author": "kgoggin <kyle@kylegoggin.com>",
   "version": "0.0.1-beta.0",
   "main": "dist/index.js",
   "license": "MIT",
@@ -40,5 +43,21 @@
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
     },
     "testRegex": "/tester/__tests__/.*\\.(ts|js)$"
+  },
+  "keywords": [
+    "gql",
+    "generator",
+    "code",
+    "types",
+    "graphql",
+    "codegen",
+    "apollo",
+    "node",
+    "types",
+    "typings",
+    "reasonml"
+  ],
+  "bugs": {
+    "url": "https://github.com/kgoggin/graphql-codegen-reason/issues"
   }
 }
