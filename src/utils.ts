@@ -4,7 +4,7 @@ export type ScalarMap = {
   [key: string]: string;
 };
 
-const reservedWords = ["type", "and", "or"];
+const reservedWords = ["type", "and", "or", "class", "end"];
 
 export const sanitizeFieldName = (fieldName: string) => {
   const camel = camelCase(fieldName);
