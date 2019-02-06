@@ -3,9 +3,15 @@ workflow "New workflow" {
   resolves = ["Run Unit Tests"]
 }
 
+action "Install bs-platform" {
+  uses = "docker://culturehq/actions-yarn:latest"
+  args = "global add bs-platform"
+}
+
 action "Install Dependencies" {
   uses = "docker://culturehq/actions-yarn:latest"
   args = "install"
+  needs = ["Install bs-platform"]
 }
 
 action "Build TS Files" {
