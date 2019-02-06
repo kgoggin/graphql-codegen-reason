@@ -5,7 +5,7 @@ workflow "On Push" {
 
 workflow "On Release" {
   on = "release"
-  resolves = ["publish"]
+  resolves = ["Publish"]
 }
 
 action "Build & Test" {
