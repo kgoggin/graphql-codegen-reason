@@ -8,6 +8,8 @@ yarn
 # build ts files
 yarn build:ts
 
+mkdir ./tester/generated
+
 # generate code from test schema
 yarn generate
 
