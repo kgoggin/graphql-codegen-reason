@@ -5,6 +5,9 @@
   "author": "kgoggin <kyle@kylegoggin.com>",
   "version": "0.0.1",
   "main": "dist/index.js",
+  "files": [
+    "/dist"
+  ],
   "license": "MIT",
   "scripts": {
     "test": "jest",

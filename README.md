@@ -19,6 +19,10 @@ generates:
     - reason-client
 ```
 
+### `__typename` is REQUIRED
+
+In order to verify that the JSON object we're working with is of the expected GraphQL type, this lib requires that the `__typename` field be present for all GraphQL query respones. (If you're using apollo-client, [this is easily accomplished via a config setting that defaults to `true`](https://www.apollographql.com/docs/react/advanced/caching.html#configuration) - chances are you're already doing it!)
+
 ## Configuration
 
 Currently the only supported configruation is specifying custom scalar values, like so:
@@ -38,7 +42,7 @@ Note that any custom scalars must be able to be decoded to a scalar Reason type 
 
 ## Working with the generated types
 
-The API for the generated types was inspired by the `[@bs.deriving abstract]` syntax recently released for bs-platform. This plugin will generate an abstract type that corresponds to each of your GraphQL `type` definitions, as well as a `module` for each that contains "getters" for the field. For example, a schema like this:
+The API for the generated types was inspired by the [`[@bs.deriving abstract]` syntax recently released for bs-platform](https://bucklescript.github.io/docs/en/object.html#record-mode). This plugin will generate an abstract type that corresponds to each of your GraphQL `type` definitions, as well as a `module` for each that contains "getters" for the field. For example, a schema like this:
 
 ```
 type Post {
@@ -82,7 +86,7 @@ Enums get typed using `[@bs.deriving jsConverter]`.
 
 ## Why not use graphql-ppx?
 
-graphql-ppx is a pretty awesome library that performs compule-time transforms of your actual GraphQL queries to generate a type that's specific _to that query_. It's a pretty awesome library for what it does, but it doesn't allow for shared types that get defined in one place and are shared across your codebase, as each query generates its own type (even if you're fetching the same underlying GraphQL types).
+[graphql-ppx](https://github.com/mhallin/graphql_ppx) is a pretty awesome library that performs compule-time transforms of your actual GraphQL queries to generate a type that's specific _to that query_. It's great for what it does, but it doesn't allow for shared types that get defined in one place and are shared across your codebase, as each query generates its own type (even if you're fetching the same underlying GraphQL types).
 
 This plugin provides a 1:1 relationship between your GraphQL types and your Reason types. In a large codebase, this can be a lot easier to reason (pardon the pun) about.
 
