@@ -18,7 +18,8 @@
     "build:re": "bsb -make-world",
     "build:re:watch": "bsb -make-world -w",
     "generate": "gql-gen",
-    "tester:build": "bsb"
+    "tester:build": "bsb",
+    "prepublish": "build:ts"
   },
   "devDependencies": {
     "@babel/cli": "^7.2.3",
