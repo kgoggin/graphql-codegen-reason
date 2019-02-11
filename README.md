@@ -63,15 +63,15 @@ type post;
 
 module Query = {
   type t = query;
-  let typeName = "Query";
-  let posts: field(t, array(post)) = getArray(~fieldName="posts", ~typeName);
+  let typename = "Query";
+  let posts: field(t, array(post)) = getArray(~fieldName="posts", ~typename);
 };
 
 module Post = {
   type t = post;
-  let typeName = "Post";
-  let title: field(t, string) = getString(~fieldName="title", ~typeName);
-  let content: field(t, option(string)) = getNullableString(~fieldName="title", ~typeName);
+  let typename = "Post";
+  let title: field(t, string) = getString(~fieldName="title", ~typename);
+  let content: field(t, option(string)) = getNullableString(~fieldName="title", ~typename);
 };
 ```
 

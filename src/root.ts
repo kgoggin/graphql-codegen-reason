@@ -78,13 +78,13 @@ const getReasonFieldType = (field: Field, scalarMap: ScalarMap) => {
 };
 
 const fieldGetter = (field: Field, scalarMap: ScalarMap) => {
-  const args = [`~fieldName="${field.name}"`, `~typeName`];
+  const args = [`~fieldName="${field.name}"`, `~typename`];
   if (field.isEnum) {
     if (field.isArray) {
       args.push(`~decoder=
         decodeEnum(
           ~fieldName="${field.name}",
-          ~typeName,
+          ~typename,
           ~decoder=${makeEnumTypeName(field.type)}FromJs,
         )`);
     } else {
@@ -135,7 +135,7 @@ const writeObjectModule = (type: Type, scalarMap: ScalarMap) => {
     .join("");
   return `module ${type.name} = {
     type t = ${camelCase(type.name)};
-    let typeName = "${type.name}";
+    let typename = "${type.name}";
     ${fields}
   };`;
 };

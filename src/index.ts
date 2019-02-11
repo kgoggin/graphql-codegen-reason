@@ -15,9 +15,9 @@ export interface ReasonConfig {
 
 const refmt = (str: string) => printRE(parseRE(str));
 
-const writeTypeDef = (typeName: string) => {
-  const suffix = typeName === "Query" ? " = Js.Json.t;" : ";";
-  return `type ${camelCase(typeName)}${suffix}`;
+const writeTypeDef = (typename: string) => {
+  const suffix = typename === "Query" ? " = Js.Json.t;" : ";";
+  return `type ${camelCase(typename)}${suffix}`;
 };
 
 export const plugin: PluginFunction<ReasonConfig> = async (
