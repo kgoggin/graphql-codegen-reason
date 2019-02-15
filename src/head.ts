@@ -1,13 +1,15 @@
 export const head = `
 type field('root, 'base) = 'root => 'base;
 
+type enumMap('enum) = ('enum => string, string => option('enum));
+
 let verifyGraphQLType = (~typename, json) =>
   switch (json->Js.Json.decodeObject) {
   | None =>
     Js.log({j|Unable to decode $typename object|j});
     raise(Not_found);
   | Some(root) =>
-    switch (root->Js.Dict.get("__typename")) {
+    typename == "Query" ? root : switch (root->Js.Dict.get("__typename")) {
     | None =>
       Js.log("Provided object is not a GraphQL object");
       raise(Not_found);
