@@ -112,6 +112,8 @@ let makeNullableDecoder =
   };
 };
 
+let decodeInt = json => json->Js.Json.decodeNumber->Belt.Option.map(int_of_float);
+
 let getString: graphQLDecoder('root, string) =
   makeDecoder(~decoder=Js.Json.decodeString);
 
@@ -123,6 +125,12 @@ let getFloat: graphQLDecoder('root, float) =
 
 let getNullableFloat: graphQLDecoder('root, option(float)) =
   makeNullableDecoder(~decoder=Js.Json.decodeNumber);
+
+let getInt: graphQLDecoder('root, int) =
+  makeDecoder(~decoder=decodeInt);
+
+let getNullableInt: graphQLDecoder('root, option(int)) =
+  makeNullableDecoder(~decoder=decodeInt);
 
 let getBool: graphQLDecoder('root, bool) =
   makeDecoder(~decoder=Js.Json.decodeBoolean);
