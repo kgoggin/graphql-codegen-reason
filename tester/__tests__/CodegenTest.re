@@ -46,7 +46,7 @@ describe("parsing JSON", () => {
                    {"__typename": "Query", "authors": [{"__typename": "Author", "age": 37}]}
                  |};
         let authors = data->Js.Json.parseExn->Query.authors;
-        Expect.(expect(authors[0]->Author.age) |> toBe(37.));
+        Expect.(expect(authors[0]->Author.age) |> toBe(37));
       });
 
       test("it can parse nullable scalar ints that are non-null", () => {
@@ -55,8 +55,8 @@ describe("parsing JSON", () => {
                    |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
-          expect(authors[0]->Author.numPosts->Belt.Option.getWithDefault(0.))
-          |> toBe(12.)
+          expect(authors[0]->Author.numPosts->Belt.Option.getWithDefault(0))
+          |> toBe(12)
         );
       });
 
@@ -66,8 +66,8 @@ describe("parsing JSON", () => {
                      |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
-          expect(authors[0]->Author.numPosts->Belt.Option.getWithDefault(0.))
-          |> toBe(0.)
+          expect(authors[0]->Author.numPosts->Belt.Option.getWithDefault(0))
+          |> toBe(0)
         );
       });
     });

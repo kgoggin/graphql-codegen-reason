@@ -51,7 +51,7 @@ const writeObjectTypeDef = (type: Type) => {
 
 const scalarMap: ScalarMap = {
   String: "string",
-  Int: "float",
+  Int: "int",
   Float: "float",
   Boolean: "bool",
   ID: "string"
