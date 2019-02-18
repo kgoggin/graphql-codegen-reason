@@ -1,7 +1,10 @@
 export const head = `
 type field('root, 'base) = 'root => 'base;
 
-type enumMap('enum) = ('enum => string, string => option('enum));
+type enumMap('enum) = {
+  toString: 'enum => string, 
+  fromString: string => option('enum),
+};
 
 let verifyGraphQLType = (~typename, json) =>
   switch (json->Js.Json.decodeObject) {

@@ -254,12 +254,12 @@ describe("parsing JSON", () => {
 
     describe("Enum maps", () => {
       test("can encode a string with the map", () => {
-        let (toString, _) = postStatusMap;
+        let {toString} = postStatusMap;
         Expect.(expect(`PUBLISHED->toString) |> toEqual("PUBLISHED"));
       });
 
       test("can decode a string with the map", () => {
-        let (_, fromString) = postStatusMap;
+        let {fromString} = postStatusMap;
         Expect.(
           expect("PUBLISHED"->fromString) |> toEqual(Some(`PUBLISHED))
         );

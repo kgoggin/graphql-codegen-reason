@@ -27,10 +27,10 @@ const writeCustomScalars = (scalars: { [scalarName: string]: string }) => {
 const writeEnumMap = (type: Enum) => {
   const typeName = makeEnumTypeName(type.name);
   return `
-  let ${camelCase(type.name)}Map: enumMap(${typeName}) = (
-    ${typeName}ToJs,
-    ${typeName}FromJs
-  );
+  let ${camelCase(type.name)}Map: enumMap(${typeName}) = {
+    toString: ${typeName}ToJs,
+    fromString: ${typeName}FromJs
+  };
   `;
 };
 
