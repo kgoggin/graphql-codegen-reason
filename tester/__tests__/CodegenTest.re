@@ -251,6 +251,20 @@ describe("parsing JSON", () => {
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.statuses[0]) |> toEqual(`PUBLISHED));
     });
+
+    describe("Enum maps", () => {
+      test("can encode a string with the map", () => {
+        let {toString} = postStatusMap;
+        Expect.(expect(`PUBLISHED->toString) |> toEqual("PUBLISHED"));
+      });
+
+      test("can decode a string with the map", () => {
+        let {fromString} = postStatusMap;
+        Expect.(
+          expect("PUBLISHED"->fromString) |> toEqual(Some(`PUBLISHED))
+        );
+      });
+    });
   });
 
   describe("naming collisions", () =>
