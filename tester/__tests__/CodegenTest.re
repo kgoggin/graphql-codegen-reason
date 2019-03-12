@@ -7,7 +7,7 @@ describe("parsing JSON", () => {
     describe("String", () => {
       test("it can parse scalar strings", () => {
         let data = {|
-                 {"__typename": "Query", "authors": [{"__typename": "Author", "firstName": "Fred"}]}
+                 {"authors": [{"__typename": "Author", "firstName": "Fred"}]}
                |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(expect(authors[0]->Author.firstName) |> toBe("Fred"));
@@ -15,7 +15,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar strings that are non-null", () => {
         let data = {|
-                     {"__typename": "Query", "authors": [{"__typename": "Author", "lastName": "Fredrickson"}]}
+                     {"authors": [{"__typename": "Author", "lastName": "Fredrickson"}]}
                    |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -28,7 +28,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar strings that are null", () => {
         let data = {|
-                       {"__typename": "Query", "authors": [{"__typename": "Author", "lastName": null}]}
+                       {"authors": [{"__typename": "Author", "lastName": null}]}
                      |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -43,7 +43,7 @@ describe("parsing JSON", () => {
     describe("Int", () => {
       test("it can parse scalar ints", () => {
         let data = {|
-                   {"__typename": "Query", "authors": [{"__typename": "Author", "age": 37}]}
+                   {"authors": [{"__typename": "Author", "age": 37}]}
                  |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(expect(authors[0]->Author.age) |> toBe(37));
@@ -51,7 +51,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar ints that are non-null", () => {
         let data = {|
-                     {"__typename": "Query", "authors": [{"__typename": "Author", "numPosts": 12}]}
+                     {"authors": [{"__typename": "Author", "numPosts": 12}]}
                    |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -62,7 +62,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar ints that are non-null", () => {
         let data = {|
-                       {"__typename": "Query", "authors": [{"__typename": "Author", "numPosts": null}]}
+                       {"authors": [{"__typename": "Author", "numPosts": null}]}
                      |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -75,7 +75,7 @@ describe("parsing JSON", () => {
     describe("Float", () => {
       test("it can parse scalar floats", () => {
         let data = {|
-                           {"__typename": "Query", "authors": [{"__typename": "Author", "height": 34.3}]}
+                           {"authors": [{"__typename": "Author", "height": 34.3}]}
                          |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(expect(authors[0]->Author.height) |> toBe(34.3));
@@ -83,7 +83,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar floats that are non-null", () => {
         let data = {|
-                             {"__typename": "Query", "authors": [{"__typename": "Author", "weight": 100.3}]}
+                             {"authors": [{"__typename": "Author", "weight": 100.3}]}
                            |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -94,7 +94,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar floats that are non-null", () => {
         let data = {|
-                               {"__typename": "Query", "authors": [{"__typename": "Author", "weight": null}]}
+                               {"authors": [{"__typename": "Author", "weight": null}]}
                              |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -107,7 +107,7 @@ describe("parsing JSON", () => {
     describe("Boolean", () => {
       test("it can parse scalar booleans", () => {
         let data = {|
-                                 {"__typename": "Query", "authors": [{"__typename": "Author", "isActive": true}]}
+                                 {"authors": [{"__typename": "Author", "isActive": true}]}
                                |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(expect(authors[0]->Author.isActive) |> toBe(true));
@@ -115,7 +115,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar booleans that are non-null", () => {
         let data = {|
-                                   {"__typename": "Query", "authors": [{"__typename": "Author", "hasLoggedIn": false}]}
+                                   {"authors": [{"__typename": "Author", "hasLoggedIn": false}]}
                                  |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -128,7 +128,7 @@ describe("parsing JSON", () => {
 
       test("it can parse nullable scalar booleans that are non-null", () => {
         let data = {|
-                                     {"__typename": "Query", "authors": [{"__typename": "Author", "hasLoggedIn": null}]}
+                                     {"authors": [{"__typename": "Author", "hasLoggedIn": null}]}
                                    |};
         let authors = data->Js.Json.parseExn->Query.authors;
         Expect.(
@@ -144,7 +144,7 @@ describe("parsing JSON", () => {
   describe("Nested types", () => {
     test("can access a nested type", () => {
       let data = {|
-                       {"__typename": "Query", "posts": [{"__typename": "Post", "author": {
+                       {"posts": [{"__typename": "Post", "author": {
                          "__typename": "Author", "firstName": "Fred"
                        }}]}
                      |};
@@ -156,7 +156,7 @@ describe("parsing JSON", () => {
 
     test("can access a nested nullable type that isn't null", () => {
       let data = {|
-                           {"__typename": "Query", "posts": [{"__typename": "Post", "meta": {
+                           {"posts": [{"__typename": "Post", "meta": {
                              "__typename": "PostMeta", "published": "Friday"
                            }}]}
                          |};
@@ -169,7 +169,7 @@ describe("parsing JSON", () => {
 
     test("can access a nested nullable type that is null", () => {
       let data = {|
-                               {"__typename": "Query", "posts": [{"__typename": "Post", "meta": null}]}
+                               {"posts": [{"__typename": "Post", "meta": null}]}
                              |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.meta) |> toBe(None));
@@ -178,7 +178,7 @@ describe("parsing JSON", () => {
     describe("Arrays of nested types", () => {
       test("can access an array of nested types", () => {
         let data = {|
-          {"__typename": "Query", "authors": [{"__typename": "Author", "posts": [{"__typename": "Post", "content": "hey"}]}]}
+          {"authors": [{"__typename": "Author", "posts": [{"__typename": "Post", "content": "hey"}]}]}
         |};
 
         let author = data->Js.Json.parseExn->Query.authors[0];
@@ -189,7 +189,7 @@ describe("parsing JSON", () => {
 
       test("can access a nullable array of nested types", () => {
         let data = {|
-                  {"__typename": "Query", "authors": [{"__typename": "Author", "postMetas": [{"__typename": "PostMeta", "published": "hey"}]}]}
+                  {"authors": [{"__typename": "Author", "postMetas": [{"__typename": "PostMeta", "published": "hey"}]}]}
                 |};
 
         let author = data->Js.Json.parseExn->Query.authors[0];
@@ -203,7 +203,7 @@ describe("parsing JSON", () => {
       });
       test("can access an array of nested nullable types", () => {
         let data = {|
-          {"__typename": "Query", "authors": [{"__typename": "Author", "nullablePosts": [{"__typename": "Post", "content": "hey"}]}]}
+          {"authors": [{"__typename": "Author", "nullablePosts": [{"__typename": "Post", "content": "hey"}]}]}
         |};
 
         let author = data->Js.Json.parseExn->Query.authors[0];
@@ -220,7 +220,7 @@ describe("parsing JSON", () => {
   describe("Enums", () => {
     test("can parse enum values", () => {
       let data = {|
-        {"__typename": "Query", "posts": [{"__typename": "Post", "status": "PUBLISHED"}]}
+        {"posts": [{"__typename": "Post", "status": "PUBLISHED"}]}
       |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.status) |> toEqual(`PUBLISHED));
@@ -228,7 +228,7 @@ describe("parsing JSON", () => {
 
     test("can parse nullable enum values that aren't null", () => {
       let data = {|
-        {"__typename": "Query", "posts": [{"__typename": "Post", "nullableStatus": "PUBLISHED"}]}
+        {"posts": [{"__typename": "Post", "nullableStatus": "PUBLISHED"}]}
       |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(
@@ -238,7 +238,7 @@ describe("parsing JSON", () => {
 
     test("can parse nullable enum values that are null", () => {
       let data = {|
-        {"__typename": "Query", "posts": [{"__typename": "Post", "nullableStatus": null}]}
+        {"posts": [{"__typename": "Post", "nullableStatus": null}]}
       |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.nullableStatus) |> toEqual(None));
@@ -246,7 +246,7 @@ describe("parsing JSON", () => {
 
     test("can parse an array of enums", () => {
       let data = {|
-        {"__typename": "Query", "posts": [{"__typename": "Post", "statuses": ["PUBLISHED"]}]}
+        {"posts": [{"__typename": "Post", "statuses": ["PUBLISHED"]}]}
       |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.statuses[0]) |> toEqual(`PUBLISHED));
@@ -270,10 +270,20 @@ describe("parsing JSON", () => {
   describe("naming collisions", () =>
     test("handles fields named 'type'", () => {
       let data = {|
-        {"__typename": "Query", "posts": [{"__typename": "Post", "type": "foo"}]}
+        {"posts": [{"__typename": "Post", "type": "foo"}]}
       |};
       let posts = data->Js.Json.parseExn->Query.posts;
       Expect.(expect(posts[0]->Post.type_) |> toEqual(Some("foo")));
+    })
+  );
+
+  describe("decoding mutation types", () =>
+    test("handles decoding the Mutation type", () => {
+      let data = {|
+                {"createPost": {"__typename": "Post", "title": "hey"}}
+              |};
+      let newPost = data->Js.Json.parseExn->Mutation.createPost;
+      Expect.(expect(newPost->Post.title) |> toEqual(Some("hey")));
     })
   );
 });

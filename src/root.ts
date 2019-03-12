@@ -45,7 +45,8 @@ ${writeEnumMap(type)}
 };
 
 const writeObjectTypeDef = (type: Type) => {
-  const querydef = type.name === "Query" ? ` = Js.Json.t` : "";
+  const querydef =
+    type.name === "Query" || type.name === "Mutation" ? ` = Js.Json.t` : "";
   return `type ${camelCase(type.name)}${querydef};`;
 };
 

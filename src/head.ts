@@ -12,7 +12,7 @@ let verifyGraphQLType = (~typename, json) =>
     Js.log({j|Unable to decode $typename object|j});
     raise(Not_found);
   | Some(root) =>
-    typename == "Query" ? root : switch (root->Js.Dict.get("__typename")) {
+    typename == "Query" || typename == "Mutation" ? root : switch (root->Js.Dict.get("__typename")) {
     | None =>
       Js.log("Provided object is not a GraphQL object");
       raise(Not_found);
