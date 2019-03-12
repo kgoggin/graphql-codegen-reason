@@ -3,7 +3,7 @@
   "description": "A GraphQL Codegen plugin to generate ReasonML types",
   "respository": "git@github.com:kgoggin/graphql-codegen-reason.git",
   "author": "kgoggin <kyle@kylegoggin.com>",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "dist/index.js",
   "files": [
     "/dist"
