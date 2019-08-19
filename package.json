@@ -15,7 +15,7 @@
     "type-check:watch": "npm run type-check -- --watch",
     "build:ts": "babel src --out-dir dist --extensions \".ts\"",
     "build:ts:watch": "babel src --out-dir dist --extensions \".ts\" -w",
-    "build:re": "bsb -make-world",
+    "build:re": "bsb -clean-world -make-world",
     "build:re:watch": "bsb -make-world -w",
     "generate": "graphql-codegen",
     "tester:build": "bsb"
@@ -33,7 +33,7 @@
     "@types/graphql": "^14.0.5",
     "@types/jest": "^24.0.17",
     "@types/lodash": "^4.14.120",
-    "bs-platform": "^4.0.18",
+    "bs-platform": "^5.0.6",
     "concurrently": "^4.1.0",
     "jest": "^24.0.0",
     "typescript": "^3.2.2"
