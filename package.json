@@ -17,7 +17,7 @@
     "build:ts:watch": "babel src --out-dir dist --extensions \".ts\" -w",
     "build:re": "bsb -make-world",
     "build:re:watch": "bsb -make-world -w",
-    "generate": "gql-gen",
+    "generate": "graphql-codegen",
     "tester:build": "bsb"
   },
   "devDependencies": {
@@ -27,12 +27,14 @@
     "@babel/preset-env": "^7.2.3",
     "@babel/preset-typescript": "^7.1.0",
     "@glennsl/bs-jest": "^0.4.7",
+    "@graphql-codegen/cli": "^1.5.0",
+    "@graphql-codegen/core": "^1.5.0",
+    "@graphql-codegen/plugin-helpers": "^1.5.0",
     "@types/graphql": "^14.0.5",
+    "@types/jest": "^24.0.17",
     "@types/lodash": "^4.14.120",
     "bs-platform": "^4.0.18",
     "concurrently": "^4.1.0",
-    "graphql-code-generator": "^0.16.1",
-    "graphql-codegen-core": "^0.16.1",
     "jest": "^24.0.0",
     "typescript": "^3.2.2"
   },
@@ -45,7 +47,10 @@
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
     },
-    "testRegex": "/tester/__tests__/.*\\.(ts|js)$"
+    "testMatch": [
+      "/**/__tests__/**/*.ts",
+      "/**/__tests__/**/*.bs.js"
+    ]
   },
   "keywords": [
     "gql",

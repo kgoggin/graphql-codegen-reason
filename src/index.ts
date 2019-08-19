@@ -1,13 +1,8 @@
-import {
-  PluginFunction,
-  DocumentFile,
-  schemaToTemplateContext
-} from "graphql-codegen-core";
-import { GraphQLSchema } from "graphql";
+import { PluginFunction, Types } from "@graphql-codegen/plugin-helpers";
+import { GraphQLSchema, printSchema, parse, visit } from "graphql";
 import { camelCase } from "lodash";
 import { parseRE, printRE } from "reason";
-
-import { rootTemplate } from "./root";
+import { makeVisitor } from "./visitor";
 
 export interface ReasonConfig {
   scalars?: { [scalarName: string]: string };
@@ -15,17 +10,19 @@ export interface ReasonConfig {
 
 const refmt = (str: string) => printRE(parseRE(str));
 
-const writeTypeDef = (typename: string) => {
-  const suffix = typename === "Query" ? " = Js.Json.t;" : ";";
-  return `type ${camelCase(typename)}${suffix}`;
-};
-
 export const plugin: PluginFunction<ReasonConfig> = async (
   schema: GraphQLSchema,
-  documents: DocumentFile[],
+  documents: Types.DocumentFile[],
   config: ReasonConfig
 ) => {
-  const templateContext = schemaToTemplateContext(schema);
+  const printedSchema = printSchema(schema);
+  const astNode = parse(printedSchema);
 
-  return rootTemplate(templateContext, config);
+  const visitor = makeVisitor(config);
+
+  visit(astNode, {
+    leave: visitor
+  });
+
+  return visitor.write();
 };
