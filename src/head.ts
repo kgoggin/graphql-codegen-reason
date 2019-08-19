@@ -2,28 +2,34 @@ export const head = `
 type field('root, 'base) = 'root => 'base;
 
 type enumMap('enum) = {
-  toString: 'enum => string, 
+  toString: 'enum => string,
   fromString: string => option('enum),
 };
 
+exception Graphql_Verify(string);
+exception Graphql_Missing_Field(string);
+exception Graphql_Bad_Enum_Value(string);
+
 let verifyGraphQLType = (~typename, json) =>
   switch (json->Js.Json.decodeObject) {
-  | None =>
-    Js.log({j|Unable to decode $typename object|j});
-    raise(Not_found);
+  | None => raise(Graphql_Verify({j|Unable to decode $typename object|j}))
   | Some(root) =>
-    typename == "Query" || typename == "Mutation" ? root : switch (root->Js.Dict.get("__typename")) {
-    | None =>
-      Js.log("Provided object is not a GraphQL object");
-      raise(Not_found);
-    | Some(name) =>
-      switch (name->Js.Json.decodeString) {
-      | Some(name) when name == typename => root
-      | _ =>
-        Js.log({j|Provided object is not $typename type|j});
-        raise(Not_found);
-      }
-    }
+    typename == "Query" || typename == "Mutation"
+      ? root
+      : (
+        switch (root->Js.Dict.get("__typename")) {
+        | None =>
+          raise(Graphql_Verify("Provided object is not a GraphQL object"))
+        | Some(name) =>
+          switch (name->Js.Json.decodeString) {
+          | Some(name) when name == typename => root
+          | _ =>
+            raise(
+              Graphql_Verify({j|Provided object is not $typename type|j}),
+            )
+          }
+        }
+      )
   };
 
 external toJSON: 'base => Js.Json.t = "%identity";
@@ -44,20 +50,22 @@ type graphQLArrayDecoder('root, 'scalar) =
 let getField = (~fieldName, ~typename, data) =>
   switch (data->toJSON->verifyGraphQLType(~typename)->Js.Dict.get(fieldName)) {
   | None =>
-    Js.log(
-      {j|Field $fieldName was not present on provided $typename object. Did you forget to fetch it?|j},
-    );
-    raise(Not_found);
+    raise(
+      Graphql_Missing_Field(
+        {j|Field $fieldName was not present on provided $typename object. Did you forget to fetch it?|j},
+      ),
+    )
   | Some(result) => result->fromJSON
   };
 
 let getNullableField = (~fieldName, ~typename, data) =>
   switch (data->toJSON->verifyGraphQLType(~typename)->Js.Dict.get(fieldName)) {
   | None =>
-    Js.log(
-      {j|Field $fieldName was not present on provided $typename object. Did you forget to fetch it?|j},
-    );
-    raise(Not_found);
+    raise(
+      Graphql_Missing_Field(
+        {j|Field $fieldName was not present on provided $typename object. Did you forget to fetch it?|j},
+      ),
+    )
   | Some(result) =>
     if ((Obj.magic(result): Js.null('a)) === Js.null) {
       None;
@@ -98,10 +106,7 @@ let getNullableArray:
 
 let makeDecoder =
     (~typename, ~fieldName, ~decoder: Js.Json.t => 'scalar, json) =>
-  switch (getField(~fieldName, ~typename, json)->decoder) {
-  | None => raise(Not_found)
-  | Some(value) => value
-  };
+  getField(~fieldName, ~typename, json)->decoder->Belt.Option.getExn;
 
 let makeNullableDecoder =
     (~typename, ~fieldName, ~decoder: Js.Json.t => 'scalar, json) => {
@@ -117,7 +122,8 @@ let makeNullableDecoder =
   };
 };
 
-let decodeInt = json => json->Js.Json.decodeNumber->Belt.Option.map(int_of_float);
+let decodeInt = json =>
+  json->Js.Json.decodeNumber->Belt.Option.map(int_of_float);
 
 let getString: graphQLDecoder('root, string) =
   makeDecoder(~decoder=Js.Json.decodeString);
@@ -131,8 +137,7 @@ let getFloat: graphQLDecoder('root, float) =
 let getNullableFloat: graphQLDecoder('root, option(float)) =
   makeNullableDecoder(~decoder=Js.Json.decodeNumber);
 
-let getInt: graphQLDecoder('root, int) =
-  makeDecoder(~decoder=decodeInt);
+let getInt: graphQLDecoder('root, int) = makeDecoder(~decoder=decodeInt);
 
 let getNullableInt: graphQLDecoder('root, option(int)) =
   makeNullableDecoder(~decoder=decodeInt);
@@ -144,29 +149,30 @@ let getNullableBool: graphQLDecoder('root, option(bool)) =
   makeNullableDecoder(~decoder=Js.Json.decodeBoolean);
 
 let decodeEnum =
-    (~typename, ~fieldName, ~decoder: string => 'enum, data: Js.Json.t) => {
+    (~typename, ~fieldName, ~decoder: string => 'enum, data: Js.Json.t) =>
   switch (data->Js.Json.decodeString) {
   | None => raise(Not_found)
   | Some(str) =>
     switch (str->decoder) {
     | None =>
-      Js.log(
-        {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
-      );
-      raise(Not_found);
+      raise(
+        Graphql_Bad_Enum_Value(
+          {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
+        ),
+      )
     | Some(value) => value
     }
   };
-};
 
 let getEnum = (~typename, ~fieldName, ~decoder, json) => {
   let str = getString(~typename, ~fieldName, json);
   switch (str->decoder) {
   | None =>
-    Js.log(
-      {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
-    );
-    raise(Not_found);
+    raise(
+      Graphql_Bad_Enum_Value(
+        {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
+      ),
+    )
   | Some(value) => value
   };
 };
@@ -176,10 +182,11 @@ let getNullableEnum = (~typename, ~fieldName, ~decoder, json) => {
   str->Belt.Option.map(value =>
     switch (value->decoder) {
     | None =>
-      Js.log(
-        {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
-      );
-      raise(Not_found);
+      raise(
+        Graphql_Bad_Enum_Value(
+          {j|Unknown enum value $str was provided for field $fieldName on $typename|j},
+        ),
+      )
     | Some(value) => value
     }
   );
