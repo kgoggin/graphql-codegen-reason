@@ -61,10 +61,12 @@ input CreatePostInput {
 }
 
 type Query {
-  posts: [Post!]!
+  posts(title: String!, status: POST_STATUS): [Post!]!
   authors: [Author!]!
 }
 
 type Mutation {
   createPost(title: String!): Post!
+  createFullPost(data: CreatePostInput!): Post!
+  maybeCreatePost(data: CreatePostInput): Post
 }

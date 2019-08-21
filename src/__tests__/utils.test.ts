@@ -1,9 +1,4 @@
-import {
-  defaultScalarMap,
-  getReasonFieldType,
-  getFieldTypeDetails,
-  IField
-} from "../utils";
+import { defaultScalarMap, getFieldTypeDetails, IField } from "../utils";
 import {
   parse,
   DefinitionNode,
@@ -226,43 +221,6 @@ const fields = isObjectTypeDefinition(firstDefNode)
 const enums = isEnumTypeDefinition(secondDefNode) ? [secondDefNode] : [];
 
 describe("utils", () => {
-  describe("getReasonFieldType", () => {
-    test.each`
-      field                         | enums    | expected
-      ${"scalarString"}             | ${enums} | ${"option(string)"}
-      ${"nonNullScalar"}            | ${enums} | ${"string"}
-      ${"scalarList"}               | ${enums} | ${"option(array(option(string)))"}
-      ${"nonNullListScalar"}        | ${enums} | ${"array(option(string))"}
-      ${"nonNullListNonNullScalar"} | ${enums} | ${"array(string)"}
-      ${"enum"}                     | ${enums} | ${"option(enum_enum)"}
-      ${"nonNullEnum"}              | ${enums} | ${"enum_enum"}
-      ${"enumList"}                 | ${enums} | ${"option(array(option(enum_enum)))"}
-      ${"nonNullListEnum"}          | ${enums} | ${"array(option(enum_enum))"}
-      ${"nonNullListNonNullEnum"}   | ${enums} | ${"array(enum_enum)"}
-      ${"object"}                   | ${enums} | ${"option(testType)"}
-      ${"nonNullObject"}            | ${enums} | ${"testType"}
-      ${"objectList"}               | ${enums} | ${"option(array(option(testType)))"}
-      ${"nonNullListObject"}        | ${enums} | ${"array(option(testType))"}
-      ${"nonNullListNonNullObject"} | ${enums} | ${"array(testType)"}
-      ${"nullListNonNullScalar"}    | ${enums} | ${"option(array(string))"}
-      ${"nullListNonNullEnum"}      | ${enums} | ${"option(array(enum_enum))"}
-      ${"nullListNonNullObject"}    | ${enums} | ${"option(array(testType))"}
-    `(
-      "returns $expected given graphql type $field",
-      ({ field, enums, expected }) => {
-        const foundField = fields.find(f => f.name.value === field);
-        if (!foundField) {
-          throw new Error(`${field} was not found in fixture`);
-        }
-        expect(
-          getReasonFieldType(
-            getFieldTypeDetails(defaultScalarMap, enums)(foundField)
-          )
-        ).toEqual(expected);
-      }
-    );
-  });
-
   describe("getFieldTypeDetails", () => {
     test.each`
       field                         | enums
@@ -290,9 +248,12 @@ describe("utils", () => {
         throw new Error(`${field} was not found in fixture`);
       }
       const expected = detailsMap[field] || {};
-      expect(getFieldTypeDetails(defaultScalarMap, enums)(foundField)).toEqual(
-        expected
-      );
+      expect(
+        getFieldTypeDetails(defaultScalarMap, enums)(
+          foundField.type,
+          foundField.name.value
+        )
+      ).toEqual(expected);
     });
   });
 });

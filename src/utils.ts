@@ -5,10 +5,10 @@ import {
   ListTypeNode,
   NonNullTypeNode,
   EnumTypeDefinitionNode,
-  FieldDefinitionNode,
   ObjectTypeDefinitionNode,
   InputObjectTypeDefinitionNode,
-  InputValueDefinitionNode
+  DefinitionNode,
+  OperationDefinitionNode
 } from "graphql";
 
 export interface ScalarMap {
@@ -23,6 +23,15 @@ export interface IField {
   isNullable: boolean;
   typeName: string;
   name: string;
+}
+
+export interface ITypeTransformers {
+  listTransform: (str: string) => string;
+  nullableListTransform: (str: string) => string;
+  nullableTransform: (str: string) => string;
+  enumTransform: (str: string) => string;
+  scalarTransform: (str: string) => string;
+  objectTransform: (str: string) => string;
 }
 
 export interface IObjectType extends ObjectTypeDefinitionNode {
@@ -41,6 +50,29 @@ export const defaultScalarMap: ScalarMap = {
   ID: "string"
 };
 
+export const transforms = {
+  option: (str: string) => `option(${str})`,
+  array: (str: string) => `array(${str})`,
+  nullable: (str: string) => `Js.Nullable.t(${str})`,
+  enum: (str: string) => camelCase(str) + "_enum",
+  optionalArg: (str: string) => `${str}=?`
+};
+
+export const composeTransforms = (transforms: ((str: string) => string)[]) => {
+  return (str: string) =>
+    transforms.reduce((prev, current) => current(prev), str);
+};
+
+export const getReasonFieldType = (
+  node: IField,
+  transformers: [(node: IField) => boolean, (str: string) => string][]
+): string => {
+  return transformers.reduce((prev, current) => {
+    const [predicate, transform] = current;
+    return predicate(node) ? transform(prev) : prev;
+  }, node.scalar || node.typeName);
+};
+
 const reservedWords = ["type", "and", "or", "class", "end"];
 
 export const sanitizeFieldName = (fieldName: string) => {
@@ -50,16 +82,6 @@ export const sanitizeFieldName = (fieldName: string) => {
   }
 
   return camel;
-};
-
-export const makeEnumTypeName = (name: string, isInputType = false) => {
-  // in inputs types, enums are encoded as strings
-  if (isInputType) {
-    return "string";
-  }
-
-  // appending enum because GraphQL allows enums to share names with common types
-  return camelCase(name) + "_enum";
 };
 
 // type guards
@@ -75,10 +97,16 @@ export const isNonNullTypeNode = (node: TypeNode): node is NonNullTypeNode => {
   return (node as NonNullTypeNode).kind === "NonNullType";
 };
 
+export const isOperationDefinitionNode = (
+  node: DefinitionNode
+): node is OperationDefinitionNode => {
+  return (node as OperationDefinitionNode).kind === "OperationDefinition";
+};
+
 export const getFieldTypeDetails = (
   scalarMap: ScalarMap,
   enums: EnumTypeDefinitionNode[]
-) => (node: FieldDefinitionNode | InputValueDefinitionNode): IField => {
+) => (type: TypeNode, name: string): IField => {
   let isList = false;
   let isNullableList = false;
   let isNullable = true;
@@ -101,9 +129,9 @@ export const getFieldTypeDetails = (
 
     return "";
   };
-  const typeName = loop(node.type);
+  const typeName = loop(type);
   return {
-    name: node.name.value,
+    name,
     typeName,
     isNullable,
     isEnum: enums.find(e => e.name.value === typeName) ? true : false,
@@ -113,35 +141,10 @@ export const getFieldTypeDetails = (
   };
 };
 
-export const getReasonFieldType = (
-  node: IField,
-  isInputType: boolean = false
-): string => {
-  let underlyingType = node.isEnum
-    ? isInputType
-      ? "string"
-      : makeEnumTypeName(node.typeName)
-    : node.scalar || camelCase(node.typeName);
-
-  let nullableStr = isInputType ? "Js.Nullable.t" : "option";
-
-  let nullableWrapper = (str: string) =>
-    node.isNullable ? `${nullableStr}(${str})` : str;
-
-  let listWrapper = (str: string) =>
-    node.isList
-      ? node.isNullableList
-        ? `${nullableStr}(array(${str}))`
-        : `array(${str})`
-      : str;
-
-  return listWrapper(nullableWrapper(underlyingType));
-};
-
 export const getReasonInputFieldValue = (node: IField) => {
   let underlyingValue = "";
   if (node.isEnum) {
-    const encoder = `${makeEnumTypeName(node.typeName)}ToJs`;
+    const encoder = `${transforms.enum(node.typeName)}ToJs`;
     let wrappedEncoder;
     if (node.isList) {
       wrappedEncoder = node.isNullableList
@@ -161,4 +164,50 @@ export const getReasonInputFieldValue = (node: IField) => {
     node.isNullable || node.isNullableList ? "->Js.Nullable.fromOption" : "";
 
   return `${underlyingValue}${optDecode}`;
+};
+
+export const writeInputObjectFieldTypes = (fields: IField[]) =>
+  fields
+    .map(
+      field =>
+        `"${sanitizeFieldName(field.name)}": ${getReasonFieldType(field, [
+          [node => node.isEnum, () => "string"],
+          [node => !node.isEnum && !node.scalar, camelCase],
+          [node => node.isNullable, transforms.nullable],
+          [node => node.isList, transforms.array],
+          [node => node.isNullableList, transforms.nullable]
+        ])}`
+    )
+    .join(",\n");
+
+export const writeInputArg = (node: IField) => {
+  return `~${sanitizeFieldName(node.name)}: ${getReasonFieldType(node, [
+    [node => node.isEnum, transforms.enum],
+    [node => !node.isEnum && !node.scalar, camelCase],
+    [node => node.isNullable, transforms.option],
+    [node => node.isList, transforms.array],
+    [node => node.isNullableList, transforms.option],
+    [node => node.isNullableList || node.isNullable, transforms.optionalArg]
+  ])}`;
+};
+
+const writeInputField = (node: IField) => {
+  return `"${sanitizeFieldName(node.name)}": ${getReasonInputFieldValue(node)}`;
+};
+
+export const writeInputModule = (
+  fieldDetails: IField[],
+  moduleName: string,
+  typeDef: string,
+  typeName: string,
+  makeFnName: string
+) => {
+  let args = fieldDetails.map(writeInputArg).join(", ") + ", ()";
+  let fields = fieldDetails.map(writeInputField).join(",");
+  return `module ${moduleName} = {
+    type ${typeName} = ${typeDef};
+    let ${makeFnName} = (${args}) => {
+      ${fields}
+    }
+  };`;
 };

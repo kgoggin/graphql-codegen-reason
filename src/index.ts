@@ -29,7 +29,7 @@ export const plugin: PluginFunction<ReasonConfig> = async (
     leave: visitor
   });
 
-  const result = visitor.write();
+  const result = visitor.write(documents);
 
   return config.refmt ? refmt(result) : result;
 };

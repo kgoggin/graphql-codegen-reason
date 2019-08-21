@@ -1,0 +1,11 @@
+query myTestQuery($title: String!, $status: POST_STATUS) {
+  posts(title: $title, status: $status) {
+    title
+  }
+}
+
+mutation createPost($data: CreatePostInput!) {
+  createFullPost(data: $data) {
+    title
+  }
+}

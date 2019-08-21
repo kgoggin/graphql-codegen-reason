@@ -2,6 +2,7 @@ overwrite: true
 generates:
   ./tester/generated/GraphQLTypes.re:
     schema: ./tester/schema.graphql
+    documents: ./tester/operations.graphql
     config:
       scalars:
         "DateTime": "string"
