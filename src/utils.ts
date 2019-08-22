@@ -42,6 +42,10 @@ export interface IInputType extends InputObjectTypeDefinitionNode {
   fieldDetails: IField[];
 }
 
+export interface IOperationType extends OperationDefinitionNode {
+  variableFieldDetails: IField[];
+}
+
 export const defaultScalarMap: ScalarMap = {
   String: "string",
   Int: "int",

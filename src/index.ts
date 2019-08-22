@@ -6,13 +6,15 @@ import { makeVisitor } from "./visitor";
 export interface ReasonConfig {
   scalars?: { [scalarName: string]: string };
   refmt?: boolean;
+  filterInputTypes?: boolean;
 }
 
 const refmt = (str: string) => printRE(parseRE(str));
 
 const defaultConfig = {
   scalars: {},
-  refmt: true
+  refmt: true,
+  filterInputTypes: false
 };
 
 export const plugin: PluginFunction<ReasonConfig> = async (

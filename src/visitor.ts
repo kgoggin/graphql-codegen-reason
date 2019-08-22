@@ -5,9 +5,10 @@ import {
   ObjectTypeDefinitionNode,
   ScalarTypeDefinitionNode,
   EnumTypeDefinitionNode,
-  InputObjectTypeDefinitionNode
+  InputObjectTypeDefinitionNode,
+  OperationDefinitionNode
 } from "graphql";
-import { camelCase, capitalize } from "lodash";
+import { camelCase, capitalize, uniq } from "lodash";
 import {
   sanitizeFieldName,
   getReasonFieldType,
@@ -18,10 +19,14 @@ import {
   IField,
   writeInputObjectFieldTypes,
   transforms,
-  writeInputModule
+  writeInputModule,
+  IOperationType
 } from "./utils";
 import { head } from "./head";
-import { writeOperationsFromDocuments } from "./documents";
+import {
+  writeOperationsFromDocuments,
+  extractDocumentOperations
+} from "./documents";
 import { Types } from "@graphql-codegen/plugin-helpers";
 
 const writeCustomScalars = (config: ReasonConfig) => {
@@ -138,6 +143,47 @@ const writeInputTypeModule = (node: IInputType) =>
     "make"
   );
 
+const filterInputObjects = (
+  inputObjects: IInputType[],
+  operations: IOperationType[]
+) => {
+  const isObjectType = (field: IField) => !field.isEnum && !field.scalar;
+
+  // first we parse out the input types that get referenced
+  // in any of the operations
+  const utilizedInputTypes: string[] = operations.reduce(
+    (prev: string[], operation) => {
+      const types = operation.variableFieldDetails
+        .filter(isObjectType)
+        .map(field => field.typeName);
+      return [...prev, ...types];
+    },
+    []
+  );
+  const uniqueInputTypesInDocuments = uniq(utilizedInputTypes);
+
+  // now we need to parse though those to make sure we include
+  // any of the types they themselves reference
+
+  const finalInputTypes: string[] = [];
+
+  let getInputTypeDependency = (typeName: string) => {
+    finalInputTypes.push(typeName);
+    const type = inputObjects.find(node => node.name.value === typeName);
+    const dependentTypes =
+      (type && type.fieldDetails.filter(isObjectType)) || [];
+    dependentTypes.forEach(node => {
+      if (!finalInputTypes.includes(node.typeName)) {
+        getInputTypeDependency(node.typeName);
+      }
+    });
+  };
+
+  uniqueInputTypesInDocuments.forEach(getInputTypeDependency);
+
+  return inputObjects.filter(node => finalInputTypes.includes(node.name.value));
+};
+
 export const makeVisitor = (config: ReasonConfig) => {
   const scalars: ScalarTypeDefinitionNode[] = [];
   const objects: ObjectTypeDefinitionNode[] = [];
@@ -168,6 +214,7 @@ export const makeVisitor = (config: ReasonConfig) => {
       ...defaultScalarMap,
       ...config.scalars
     };
+    const operations = extractDocumentOperations(documents, scalarMap, enums);
     const getDetails = getFieldTypeDetails(scalarMap, enums);
     const objectsWithDetails = objects.map(obj => ({
       ...obj,
@@ -183,15 +230,19 @@ export const makeVisitor = (config: ReasonConfig) => {
         : []
     }));
 
+    const filteredInputObjects = config.filterInputTypes
+      ? filterInputObjects(inputObjectsWithDetails, operations)
+      : inputObjectsWithDetails;
+
     return `
     ${head}
     ${writeCustomScalars(config)}
     ${enums.map(writeEnumType).join("\n")}
     ${objectsWithDetails.map(writeObjectType).join("\n")}
-    type ${inputObjectsWithDetails.map(writeInputType).join(" and \n")};
+    type ${filteredInputObjects.map(writeInputType).join(" and \n")};
     ${objectsWithDetails.map(writeObjectModule).join("\n")}
-    ${inputObjectsWithDetails.map(writeInputTypeModule).join("\n")}
-    ${writeOperationsFromDocuments(documents, scalarMap, enums)}
+    ${filteredInputObjects.map(writeInputTypeModule).join("\n")}
+    ${writeOperationsFromDocuments(operations)}
     `;
   };
 

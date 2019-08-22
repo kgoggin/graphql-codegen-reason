@@ -60,6 +60,12 @@ input CreatePostInput {
   postTime: DateTime!
 }
 
+input RandoInput {
+  thisIs: String
+  notUsed: String
+  byAnything: String
+}
+
 type Query {
   posts(title: String!, status: POST_STATUS): [Post!]!
   authors: [Author!]!

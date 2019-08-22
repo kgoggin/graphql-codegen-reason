@@ -4,6 +4,7 @@ generates:
     schema: ./tester/schema.graphql
     documents: ./tester/operations.graphql
     config:
+      filterInputTypes: false
       scalars:
         "DateTime": "string"
     plugins:
