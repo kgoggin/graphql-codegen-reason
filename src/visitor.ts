@@ -234,12 +234,17 @@ export const makeVisitor = (config: ReasonConfig) => {
       ? filterInputObjects(inputObjectsWithDetails, operations)
       : inputObjectsWithDetails;
 
+    const inputObjectTypeDefs =
+      (filteredInputObjects.length &&
+        `type ${filteredInputObjects.map(writeInputType).join(" and \n")};`) ||
+      "";
+
     return `
     ${head}
     ${writeCustomScalars(config)}
     ${enums.map(writeEnumType).join("\n")}
     ${objectsWithDetails.map(writeObjectType).join("\n")}
-    type ${filteredInputObjects.map(writeInputType).join(" and \n")};
+    ${inputObjectTypeDefs}
     ${objectsWithDetails.map(writeObjectModule).join("\n")}
     ${filteredInputObjects.map(writeInputTypeModule).join("\n")}
     ${writeOperationsFromDocuments(operations)}
