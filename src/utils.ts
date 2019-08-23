@@ -204,14 +204,22 @@ export const writeInputModule = (
   moduleName: string,
   typeDef: string,
   typeName: string,
-  makeFnName: string
+  makeFnName: string,
+  additionalContent = ""
 ) => {
-  let args = fieldDetails.map(writeInputArg).join(", ") + ", ()";
-  let fields = fieldDetails.map(writeInputField).join(",");
+  let args =
+    (fieldDetails.length &&
+      fieldDetails.map(writeInputArg).join(", ") + ", ()") ||
+    "";
+  let fields =
+    (fieldDetails.length &&
+      `{
+    ${fieldDetails.map(writeInputField).join(",")}
+}`) ||
+    "()";
   return `module ${moduleName} = {
-    type ${typeName} = ${typeDef};
-    let ${makeFnName} = (${args}) => {
-      ${fields}
-    }
+    type ${typeName} = ${(fieldDetails.length && typeDef) || "unit"};
+    let ${makeFnName} = (${args}) => ${fields};
+    ${additionalContent}
   };`;
 };

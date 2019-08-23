@@ -1,4 +1,4 @@
-import { ReasonConfig } from ".";
+import { ReasonConfig, LoadedFragment } from ".";
 import {
   VisitFn,
   ASTNode,
@@ -209,7 +209,10 @@ export const makeVisitor = (config: ReasonConfig) => {
   > = node => inputObjects.push(node);
 
   // write the result
-  const write = (documents: Types.DocumentFile[]) => {
+  const write = (
+    documents: Types.DocumentFile[],
+    fragments: LoadedFragment[]
+  ) => {
     const scalarMap = {
       ...defaultScalarMap,
       ...config.scalars
@@ -247,7 +250,7 @@ export const makeVisitor = (config: ReasonConfig) => {
     ${inputObjectTypeDefs}
     ${objectsWithDetails.map(writeObjectModule).join("\n")}
     ${filteredInputObjects.map(writeInputTypeModule).join("\n")}
-    ${writeOperationsFromDocuments(operations)}
+    ${writeOperationsFromDocuments(operations, fragments, config)}
     `;
   };
 

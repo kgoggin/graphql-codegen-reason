@@ -1,11 +1,21 @@
+fragment PostData on Post {
+  title
+}
+
 query myTestQuery($title: String!, $status: POST_STATUS) {
   posts(title: $title, status: $status) {
-    title
+    ...PostData
   }
 }
 
 mutation createPost($data: CreatePostInput!) {
   createFullPost(data: $data) {
-    title
+    ...PostData
+  }
+}
+
+query noVariables {
+  authors {
+    firstName
   }
 }
