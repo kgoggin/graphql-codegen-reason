@@ -9,7 +9,7 @@ generates:
         "DateTime": "string"
     plugins:
       - graphql-codegen-reason-client
-  ./generated/Apollo.re:
+  ./generated/Graphql.re:
     config:
       filterInputTypes: false
       graphqlTypesModuleName: GraphQLTypes

@@ -6,12 +6,12 @@ import {
   ISchemaData,
   refmt,
   IOperationType,
-  writeInputModule,
   ScalarMap,
   isOperationDefinitionNode,
   getFieldTypeDetails,
   writeInputObjectFieldTypes,
   defaultBaseConfig,
+  makeMakeVariables,
 } from 'graphql-codegen-reason-base';
 import gqlTag from 'graphql-tag';
 import {
@@ -27,7 +27,7 @@ import {
   FragmentSpreadNode,
   EnumTypeDefinitionNode,
 } from 'graphql';
-import { upperFirst, camelCase } from 'lodash';
+import { upperFirst, camelCase, capitalize } from 'lodash';
 
 export interface ReasonReactApolloConfig extends BaseReasonConfig {
   graphqlTypesModuleName: string;
@@ -100,17 +100,25 @@ const writeOperation = (
   fragments: LoadedFragment[],
   config: ReasonReactApolloConfig
 ) => {
-  return writeInputModule(
-    node.variableFieldDetails,
-    upperFirst(camelCase((node.name && node.name.value) || '')),
-    `{
+  const functorName = `Make${capitalize(node.operation)}`;
+  const moduleName = upperFirst(
+    camelCase((node.name && node.name.value) || '')
+  );
+  const typeDef = node.variableFieldDetails.length
+    ? `{
     .
     ${writeInputObjectFieldTypes(node.variableFieldDetails)}
-  }`,
-    'variables',
-    'makeVariables',
-    writeDocumentNode(node, fragments, config)
-  );
+  }`
+    : 'unit';
+  return `module ${moduleName} = {
+    include ${functorName}({
+      type variables = ${typeDef};
+      let parse = toJSON;
+      ${writeDocumentNode(node, fragments, config)}
+    });
+
+    ${makeMakeVariables(node.variableFieldDetails, 'makeVariables')}
+  }`;
 };
 
 export const extractDocumentOperations = (
@@ -176,7 +184,7 @@ export const writeOperationsFromDocuments = (
 
 const defaultConfig = {
   ...defaultBaseConfig,
-  documentNodeTypeName: "Js.t('a)",
+  documentNodeTypeName: 'documentNode',
 };
 
 export const plugin: PluginFunction<ReasonReactApolloConfig> = async (
@@ -207,7 +215,15 @@ export const plugin: PluginFunction<ReasonReactApolloConfig> = async (
 
   const visitor = makeVisitor(config, (data: ISchemaData) => {
     return `
-    include ${config.graphqlTypesModuleName}
+    include ${config.graphqlTypesModuleName};
+
+    include ReasonReactApollo.Project.Make({
+      type query = Query.t;
+      type mutation = Mutation.t;
+      let parseQuery: Js.Json.t => query = fromJSON;
+      let parseMutation: Js.Json.t => mutation = fromJSON;
+    });
+
     ${writeOperationsFromDocuments(data.operations, allFragments, config)}`;
   });
 

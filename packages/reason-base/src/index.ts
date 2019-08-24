@@ -281,14 +281,7 @@ export const writeInputArg = (node: IField) => {
   ])}`;
 };
 
-export const writeInputModule = (
-  fieldDetails: IField[],
-  moduleName: string,
-  typeDef: string,
-  typeName: string,
-  makeFnName: string,
-  additionalContent = ''
-) => {
+export const makeMakeVariables = (fieldDetails: IField[], fnName: string) => {
   let args =
     (fieldDetails.length &&
       fieldDetails.map(writeInputArg).join(', ') + ', ()') ||
@@ -299,11 +292,25 @@ export const writeInputModule = (
     ${fieldDetails.map(writeInputField).join(',')}
 }`) ||
     '()';
-  return `module ${moduleName} = {
+  return `let ${fnName} = (${args}) => ${fields};`;
+};
+
+export const writeInputModule = (
+  fieldDetails: IField[],
+  moduleName: string,
+  typeDef: string,
+  typeName: string,
+  makeFnName: string,
+  additionalContent = '',
+  functorName?: string
+) => {
+  const functorWrapper = (str: string) =>
+    functorName ? `${functorName}(${str})` : str;
+  return `module ${moduleName} = ${functorWrapper(`{
     type ${typeName} = ${(fieldDetails.length && typeDef) || 'unit'};
-    let ${makeFnName} = (${args}) => ${fields};
+    ${makeMakeVariables(fieldDetails, makeFnName)}
     ${additionalContent}
-  };`;
+  }`)};`;
 };
 
 export const writeInputObjectFieldTypes = (fields: IField[]) =>

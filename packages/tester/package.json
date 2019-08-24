@@ -15,7 +15,7 @@
     "bs-platform": "^5.0.6",
     "graphql-codegen-reason-base": "^1.0.0-beta.3",
     "graphql-codegen-reason-client": "^1.0.0-beta.3",
-    "graphql-codegen-reason-react-apollo": "^0.1.0"
+    "graphql-codegen-reason-react-apollo": "^1.0.0-beta.3"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.9",
