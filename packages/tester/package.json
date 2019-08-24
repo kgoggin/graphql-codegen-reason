@@ -1,6 +1,6 @@
 {
   "name": "tester",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.4",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -13,9 +13,9 @@
   "dependencies": {
     "@graphql-codegen/cli": "^1.6.1",
     "bs-platform": "^5.0.6",
-    "graphql-codegen-reason-base": "^1.0.0-beta.3",
-    "graphql-codegen-reason-client": "^1.0.0-beta.3",
-    "graphql-codegen-reason-react-apollo": "^1.0.0-beta.3"
+    "graphql-codegen-reason-base": "^1.0.0-beta.4",
+    "graphql-codegen-reason-client": "^1.0.0-beta.4",
+    "graphql-codegen-reason-react-apollo": "^1.0.0-beta.4"
   },
   "devDependencies": {
     "@glennsl/bs-jest": "^0.4.9",
