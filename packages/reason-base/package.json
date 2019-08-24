@@ -4,7 +4,6 @@
   "author": "kgoggin <kyle@kylegoggin.com>",
   "license": "MIT",
   "main": "dist/index.js",
-  "private": true,
   "files": [
     "/dist"
   ],
