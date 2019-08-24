@@ -1,25 +1,38 @@
-import { Types } from "@graphql-codegen/plugin-helpers";
-import { relative } from "path";
-import gqlTag from "graphql-tag";
+import { PluginFunction, Types } from '@graphql-codegen/plugin-helpers';
 import {
-  isOperationDefinitionNode,
-  writeInputObjectFieldTypes,
-  IField,
-  writeInputArg,
-  getFieldTypeDetails,
-  ScalarMap,
+  BaseReasonConfig,
+  LoadedFragment,
+  makeVisitor,
+  ISchemaData,
+  refmt,
+  IOperationType,
   writeInputModule,
-  IOperationType
-} from "./utils";
+  ScalarMap,
+  isOperationDefinitionNode,
+  getFieldTypeDetails,
+  writeInputObjectFieldTypes,
+  defaultBaseConfig,
+} from 'graphql-codegen-reason-base';
+import gqlTag from 'graphql-tag';
 import {
-  OperationDefinitionNode,
-  EnumTypeDefinitionNode,
-  visit,
   print,
-  FragmentSpreadNode
-} from "graphql";
-import { camelCase, upperFirst } from "lodash";
-import { ReasonConfig, LoadedFragment } from ".";
+  printSchema,
+  parse,
+  concatAST,
+  DocumentNode,
+  FragmentDefinitionNode,
+  visit,
+  Kind,
+  GraphQLSchema,
+  FragmentSpreadNode,
+  EnumTypeDefinitionNode,
+} from 'graphql';
+import { upperFirst, camelCase } from 'lodash';
+
+export interface ReasonReactApolloConfig extends BaseReasonConfig {
+  graphqlTypesModuleName: string;
+  documentNodeTypeName?: string;
+}
 
 const extractFragments = (document: IOperationType): string[] => {
   if (!document) {
@@ -32,8 +45,8 @@ const extractFragments = (document: IOperationType): string[] => {
     enter: {
       FragmentSpread: (node: FragmentSpreadNode) => {
         names.push(node.name.value);
-      }
-    }
+      },
+    },
   });
 
   return names;
@@ -60,21 +73,21 @@ const includeFragments = (
         return null;
       })
       .filter(a => a)
-      .join("\n")}`;
+      .join('\n')}`;
   }
 
-  return "";
+  return '';
 };
 
 const writeDocumentNode = (
   node: IOperationType,
   fragments: LoadedFragment[],
-  config: ReasonConfig
+  config: ReasonReactApolloConfig
 ) => {
   const doc = `${print(node)}
   ${includeFragments(transformFragments(node), fragments)}`;
   const gqlObj = gqlTag(doc);
-  if (gqlObj && gqlObj["loc"]) {
+  if (gqlObj && gqlObj['loc']) {
   }
   delete gqlObj.loc;
   return `let ${node.operation}: ${
@@ -85,17 +98,17 @@ const writeDocumentNode = (
 const writeOperation = (
   node: IOperationType,
   fragments: LoadedFragment[],
-  config: ReasonConfig
+  config: ReasonReactApolloConfig
 ) => {
   return writeInputModule(
     node.variableFieldDetails,
-    upperFirst(camelCase((node.name && node.name.value) || "")),
+    upperFirst(camelCase((node.name && node.name.value) || '')),
     `{
     .
     ${writeInputObjectFieldTypes(node.variableFieldDetails)}
   }`,
-    "variables",
-    "makeVariables",
+    'variables',
+    'makeVariables',
     writeDocumentNode(node, fragments, config)
   );
 };
@@ -122,8 +135,8 @@ export const extractDocumentOperations = (
             ...prevOperations,
             {
               ...def,
-              variableFieldDetails: details
-            }
+              variableFieldDetails: details,
+            },
           ];
         }
         return prevOperations;
@@ -137,26 +150,69 @@ export const extractDocumentOperations = (
 export const writeOperationsFromDocuments = (
   operations: IOperationType[],
   fragments: LoadedFragment[],
-  config: ReasonConfig
+  config: ReasonReactApolloConfig
 ) => {
   let queries: string[] = [];
   let mutations: string[] = [];
   operations.forEach(def => {
     const operation = writeOperation(def, fragments, config);
-    if (def.operation === "query") {
+    if (def.operation === 'query') {
       queries.push(operation);
-    } else if (def.operation === "mutation") {
+    } else if (def.operation === 'mutation') {
       mutations.push(operation);
     }
   });
 
   return `
   module Queries = {
-    ${queries.join("\n")}
+    ${queries.join('\n')}
   };
 
   module Mutations = {
-    ${mutations.join("\n")}
+    ${mutations.join('\n')}
   }
   `;
+};
+
+const defaultConfig = {
+  ...defaultBaseConfig,
+  documentNodeTypeName: "Js.t('a)",
+};
+
+export const plugin: PluginFunction<ReasonReactApolloConfig> = async (
+  schema: GraphQLSchema,
+  documents: Types.DocumentFile[],
+  c: ReasonReactApolloConfig
+) => {
+  const printedSchema = printSchema(schema);
+  const astNode = parse(printedSchema);
+  const config = { ...defaultConfig, ...c };
+  const allAst = concatAST(
+    documents.reduce((prev: DocumentNode[], v) => {
+      return [...prev, v.content];
+    }, [])
+  );
+
+  const allFragments: LoadedFragment[] = [
+    ...(allAst.definitions.filter(
+      d => d.kind === Kind.FRAGMENT_DEFINITION
+    ) as FragmentDefinitionNode[]).map(fragmentDef => ({
+      node: fragmentDef,
+      name: fragmentDef.name.value,
+      onType: fragmentDef.typeCondition.name.value,
+      isExternal: false,
+    })),
+    ...[],
+  ];
+
+  const visitor = makeVisitor(config, (data: ISchemaData) => {
+    return `
+    include ${config.graphqlTypesModuleName}
+    ${writeOperationsFromDocuments(data.operations, allFragments, config)}`;
+  });
+
+  visit(astNode, { leave: visitor });
+  const result = visitor.write(documents);
+
+  return config.refmt ? refmt(result) : result;
 };

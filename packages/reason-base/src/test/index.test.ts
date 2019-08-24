@@ -1,21 +1,21 @@
-import { defaultScalarMap, getFieldTypeDetails, IField } from "../utils";
+import { defaultScalarMap, getFieldTypeDetails, IField } from '../index';
 import {
   parse,
   DefinitionNode,
   ObjectTypeDefinitionNode,
-  EnumTypeDefinitionNode
-} from "graphql";
+  EnumTypeDefinitionNode,
+} from 'graphql';
 
 const isObjectTypeDefinition = (
   node: DefinitionNode
 ): node is ObjectTypeDefinitionNode => {
-  return node.kind === "ObjectTypeDefinition";
+  return node.kind === 'ObjectTypeDefinition';
 };
 
 const isEnumTypeDefinition = (
   node: DefinitionNode
 ): node is EnumTypeDefinitionNode => {
-  return node.kind === "EnumTypeDefinition";
+  return node.kind === 'EnumTypeDefinition';
 };
 
 const schema = `
@@ -51,46 +51,46 @@ const detailsMap: { [key: string]: IField } = {
     isList: false,
     isNullableList: false,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: true,
-    typeName: "String",
-    name: "scalarString"
+    typeName: 'String',
+    name: 'scalarString',
   },
   nonNullScalar: {
     isList: false,
     isNullableList: false,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: false,
-    typeName: "String",
-    name: "nonNullScalar"
+    typeName: 'String',
+    name: 'nonNullScalar',
   },
   scalarList: {
     isList: true,
     isNullableList: true,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: true,
-    typeName: "String",
-    name: "scalarList"
+    typeName: 'String',
+    name: 'scalarList',
   },
   nonNullListScalar: {
     isList: true,
     isNullableList: false,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: true,
-    typeName: "String",
-    name: "nonNullListScalar"
+    typeName: 'String',
+    name: 'nonNullListScalar',
   },
   nonNullListNonNullScalar: {
     isList: true,
     isNullableList: false,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: false,
-    typeName: "String",
-    name: "nonNullListNonNullScalar"
+    typeName: 'String',
+    name: 'nonNullListNonNullScalar',
   },
   enum: {
     isList: false,
@@ -98,8 +98,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: true,
-    typeName: "Enum",
-    name: "enum"
+    typeName: 'Enum',
+    name: 'enum',
   },
   nonNullEnum: {
     isList: false,
@@ -107,8 +107,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: false,
-    typeName: "Enum",
-    name: "nonNullEnum"
+    typeName: 'Enum',
+    name: 'nonNullEnum',
   },
   enumList: {
     isList: true,
@@ -116,8 +116,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: true,
-    typeName: "Enum",
-    name: "enumList"
+    typeName: 'Enum',
+    name: 'enumList',
   },
   nonNullListEnum: {
     isList: true,
@@ -125,8 +125,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: true,
-    typeName: "Enum",
-    name: "nonNullListEnum"
+    typeName: 'Enum',
+    name: 'nonNullListEnum',
   },
   nonNullListNonNullEnum: {
     isList: true,
@@ -134,8 +134,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: false,
-    typeName: "Enum",
-    name: "nonNullListNonNullEnum"
+    typeName: 'Enum',
+    name: 'nonNullListNonNullEnum',
   },
   object: {
     isList: false,
@@ -143,8 +143,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: true,
-    typeName: "TestType",
-    name: "object"
+    typeName: 'TestType',
+    name: 'object',
   },
   nonNullObject: {
     isList: false,
@@ -152,8 +152,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: false,
-    typeName: "TestType",
-    name: "nonNullObject"
+    typeName: 'TestType',
+    name: 'nonNullObject',
   },
   objectList: {
     isList: true,
@@ -161,8 +161,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: true,
-    typeName: "TestType",
-    name: "objectList"
+    typeName: 'TestType',
+    name: 'objectList',
   },
   nonNullListObject: {
     isList: true,
@@ -170,8 +170,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: true,
-    typeName: "TestType",
-    name: "nonNullListObject"
+    typeName: 'TestType',
+    name: 'nonNullListObject',
   },
   nonNullListNonNullObject: {
     isList: true,
@@ -179,17 +179,17 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: false,
-    typeName: "TestType",
-    name: "nonNullListNonNullObject"
+    typeName: 'TestType',
+    name: 'nonNullListNonNullObject',
   },
   nullListNonNullScalar: {
     isList: true,
     isNullableList: true,
     isEnum: false,
-    scalar: "string",
+    scalar: 'string',
     isNullable: false,
-    typeName: "String",
-    name: "nullListNonNullScalar"
+    typeName: 'String',
+    name: 'nullListNonNullScalar',
   },
   nullListNonNullEnum: {
     isList: true,
@@ -197,8 +197,8 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: true,
     scalar: null,
     isNullable: false,
-    typeName: "Enum",
-    name: "nullListNonNullEnum"
+    typeName: 'Enum',
+    name: 'nullListNonNullEnum',
   },
   nullListNonNullObject: {
     isList: true,
@@ -206,9 +206,9 @@ const detailsMap: { [key: string]: IField } = {
     isEnum: false,
     scalar: null,
     isNullable: false,
-    typeName: "TestType",
-    name: "nullListNonNullObject"
-  }
+    typeName: 'TestType',
+    name: 'nullListNonNullObject',
+  },
 };
 
 const astNode = parse(schema);
@@ -220,29 +220,29 @@ const fields = isObjectTypeDefinition(firstDefNode)
 
 const enums = isEnumTypeDefinition(secondDefNode) ? [secondDefNode] : [];
 
-describe("utils", () => {
-  describe("getFieldTypeDetails", () => {
+describe('utils', () => {
+  describe('getFieldTypeDetails', () => {
     test.each`
       field                         | enums
-      ${"scalarString"}             | ${enums}
-      ${"nonNullScalar"}            | ${enums}
-      ${"scalarList"}               | ${enums}
-      ${"nonNullListScalar"}        | ${enums}
-      ${"nonNullListNonNullScalar"} | ${enums}
-      ${"enum"}                     | ${enums}
-      ${"nonNullEnum"}              | ${enums}
-      ${"enumList"}                 | ${enums}
-      ${"nonNullListEnum"}          | ${enums}
-      ${"nonNullListNonNullEnum"}   | ${enums}
-      ${"object"}                   | ${enums}
-      ${"nonNullObject"}            | ${enums}
-      ${"nonNullListObject"}        | ${enums}
-      ${"objectList"}               | ${enums}
-      ${"nonNullListNonNullObject"} | ${enums}
-      ${"nullListNonNullScalar"}    | ${enums}
-      ${"nullListNonNullEnum"}      | ${enums}
-      ${"nullListNonNullObject"}    | ${enums}
-    `("returns correct details for graphql type $field", ({ field, enums }) => {
+      ${'scalarString'}             | ${enums}
+      ${'nonNullScalar'}            | ${enums}
+      ${'scalarList'}               | ${enums}
+      ${'nonNullListScalar'}        | ${enums}
+      ${'nonNullListNonNullScalar'} | ${enums}
+      ${'enum'}                     | ${enums}
+      ${'nonNullEnum'}              | ${enums}
+      ${'enumList'}                 | ${enums}
+      ${'nonNullListEnum'}          | ${enums}
+      ${'nonNullListNonNullEnum'}   | ${enums}
+      ${'object'}                   | ${enums}
+      ${'nonNullObject'}            | ${enums}
+      ${'nonNullListObject'}        | ${enums}
+      ${'objectList'}               | ${enums}
+      ${'nonNullListNonNullObject'} | ${enums}
+      ${'nullListNonNullScalar'}    | ${enums}
+      ${'nullListNonNullEnum'}      | ${enums}
+      ${'nullListNonNullObject'}    | ${enums}
+    `('returns correct details for graphql type $field', ({ field, enums }) => {
       const foundField = fields.find(f => f.name.value === field);
       if (!foundField) {
         throw new Error(`${field} was not found in fixture`);

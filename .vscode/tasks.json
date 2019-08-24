@@ -4,24 +4,26 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "generate",
-      "problemMatcher": ["$eslint-compact"]
+      "label": "Build All",
+      "command": "./node_modules/.bin/lerna",
+      "args": [
+        "run",
+        "build"
+      ],
+      "problemMatcher": []
     },
     {
+      "label": "Generate",
       "type": "npm",
-      "script": "build:re",
-      "problemMatcher": ["$ocamlc"]
+      "script": "generate",
+      "path": "packages/tester/",
+      "problemMatcher": []
     },
     {
       "type": "npm",
       "script": "build:re:watch",
-      "problemMatcher": ["$ocamlc"]
-    },
-    {
-      "type": "npm",
-      "script": "build:ts:watch",
-      "problemMatcher": ["$eslint-compact"]
+      "path": "packages/tester/",
+      "problemMatcher": []
     }
   ]
 }

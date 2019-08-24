@@ -1,0 +1,24 @@
+{
+  "name": "tester",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "yarn run generate && bsb -clean-world -make-world",
+    "build:re:watch": "bsb -make-world -w",
+    "generate": "graphql-codegen",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@graphql-codegen/cli": "^1.6.1",
+    "bs-platform": "^5.0.6",
+    "graphql-codegen-reason-base": "^1.0.0-beta.3",
+    "graphql-codegen-reason-client": "^1.0.0-beta.3",
+    "graphql-codegen-reason-react-apollo": "^0.1.0"
+  },
+  "devDependencies": {
+    "@glennsl/bs-jest": "^0.4.9",
+    "jest": "^24.9.0"
+  }
+}

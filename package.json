@@ -1,72 +1,15 @@
 {
-  "name": "graphql-codegen-reason-client",
-  "description": "A GraphQL Codegen plugin to generate ReasonML types",
-  "respository": "git@github.com:kgoggin/graphql-codegen-reason.git",
-  "author": "kgoggin <kyle@kylegoggin.com>",
-  "version": "1.0.0-beta.3",
-  "main": "dist/index.js",
-  "files": [
-    "/dist"
-  ],
+  "name": "graphql-codegen-reason",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:kgoggin/graphql-codegen-reason.git",
+  "author": "Kyle Goggin <kyle@kylegoggin.com>",
   "license": "MIT",
-  "scripts": {
-    "test": "jest",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build:ts": "babel src --out-dir dist --extensions \".ts\"",
-    "build:ts:watch": "babel src --out-dir dist --extensions \".ts\" -w",
-    "build:re": "bsb -clean-world -make-world",
-    "build:re:watch": "bsb -make-world -w",
-    "generate": "graphql-codegen",
-    "tester:build": "bsb"
-  },
-  "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.2.2",
-    "@babel/plugin-proposal-object-rest-spread": "^7.2.0",
-    "@babel/preset-env": "^7.2.3",
-    "@babel/preset-typescript": "^7.1.0",
-    "@glennsl/bs-jest": "^0.4.7",
-    "@graphql-codegen/cli": "^1.5.0",
-    "@graphql-codegen/core": "^1.5.0",
-    "@graphql-codegen/plugin-helpers": "^1.5.0",
-    "@types/graphql": "^14.0.5",
-    "@types/jest": "^24.0.17",
-    "@types/lodash": "^4.14.120",
-    "bs-platform": "^5.0.6",
-    "concurrently": "^4.1.0",
-    "jest": "^24.0.0",
-    "typescript": "^3.2.2"
-  },
-  "dependencies": {
-    "graphql": "^14.1.1",
-    "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.11",
-    "reason": "^3.3.4"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.(js|jsx|ts|tsx)$": "babel-jest"
-    },
-    "testMatch": [
-      "/**/__tests__/**/*.ts",
-      "/**/__tests__/**/*.bs.js"
-    ]
-  },
-  "keywords": [
-    "gql",
-    "generator",
-    "code",
-    "types",
-    "graphql",
-    "codegen",
-    "apollo",
-    "node",
-    "types",
-    "typings",
-    "reasonml"
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "bugs": {
-    "url": "https://github.com/kgoggin/graphql-codegen-reason/issues"
+  "dependencies": {
+    "lerna": "^3.16.4"
   }
 }

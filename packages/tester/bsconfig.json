@@ -1,11 +1,15 @@
 {
-  "name": "gql-to-reason-tester",
+  "name": "tester",
   "reason": {
     "react-jsx": 2
   },
   "sources": [
     {
-      "dir": "tester",
+      "dir": "generated",
+      "subdirs": true
+    },
+    {
+      "dir": "__tests__",
       "subdirs": true
     }
   ],
@@ -14,7 +18,7 @@
     "in-source": true
   },
   "namespace": true,
-  "bs-dependencies": ["@glennsl/bs-jest"],
+  "bs-dependencies": ["@glennsl/bs-jest", "reason-react-apollo"],
   "refmt": 3,
   "suffix": ".bs.js",
   "bsc-flags": ["-bs-g"]
