@@ -27,4 +27,3 @@ lib/bs
 node_modules
 lib
 .cache
-dist
