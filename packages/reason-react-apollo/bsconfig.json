@@ -4,21 +4,16 @@
   "version": "0.1.0",
   "sources": [
     {
-      "dir": "examples",
-      "type": "dev"
-    },
-    {
       "dir": "src",
       "subdirs": true
     }
   ],
   "package-specs": {
-    "module": "commonjs",
+    "module": "es6",
     "in-source": true
   },
   "suffix": ".bs.js",
   "bs-dependencies": ["reason-react"],
-  "bs-dev-dependencies": ["re-classnames"],
   "warnings": {
     "error": "+101"
   },
