@@ -1,5 +1,5 @@
 {
-  "name": "@kgoggin/reason-react-apollo",
+  "name": "reason-react-apollo",
   "version": "0.1.0-alpha.0",
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
