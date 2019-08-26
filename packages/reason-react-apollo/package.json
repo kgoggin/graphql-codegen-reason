@@ -1,0 +1,31 @@
+{
+  "name": "@kgoggin/reason-react-apollo",
+  "version": "0.1.0-alpha.0",
+  "dependencies": {
+    "bs-platform": "^5.0.6"
+  },
+  "devDependencies": {
+    "@apollo/react-hooks": "^3.0.0",
+    "@graphql-codegen/cli": "^1.5.0",
+    "apollo-boost": "^0.4.3",
+    "apollo-client": "^2.6.3",
+    "apollo-link-http": "^1.5.15",
+    "apollo-server": "^2.8.1",
+    "autoprefixer": "^9.6.1",
+    "bsb-js": "^1.1.7",
+    "graphql": "^14.4.2",
+    "graphql-code-generator": "^0.16.1",
+    "graphql-codegen-reason-client": "^0.2.1",
+    "parcel-bundler": "^1.12.3",
+    "postcss-modules": "^1.4.1",
+    "re-classnames": "^4.0.0",
+    "reason-react": "^0.7.0",
+    "tailwindcss": "^1.1.0",
+    "uuid": "^3.3.2"
+  },
+  "scripts": {
+    "bsb:watch": "bsb -clean-world -make-world -w",
+    "dev": "parcel examples/index.html",
+    "codegen": "gql-gen --config ./examples/codegen.yml"
+  }
+}
