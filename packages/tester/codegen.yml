@@ -13,6 +13,7 @@ generates:
     config:
       filterInputTypes: false
       graphqlTypesModuleName: GraphQLTypes
+      graphQLErrorTypeName: GraphQLError.t
       scalars:
         "DateTime": "string"
     plugins:
