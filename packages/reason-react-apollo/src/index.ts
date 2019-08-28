@@ -32,6 +32,7 @@ import { upperFirst, camelCase, capitalize } from 'lodash';
 export interface ReasonReactApolloConfig extends BaseReasonConfig {
   graphqlTypesModuleName: string;
   documentNodeTypeName?: string;
+  graphQLErrorTypeName: string;
 }
 
 const extractFragments = (document: IOperationType): string[] => {
@@ -220,6 +221,7 @@ export const plugin: PluginFunction<ReasonReactApolloConfig> = async (
     include ReasonReactApollo.Project.Make({
       type query = Query.t;
       type mutation = Mutation.t;
+      type graphQLError = ${config.graphQLErrorTypeName};
       let parseQuery: Js.Json.t => query = fromJSON;
       let parseMutation: Js.Json.t => mutation = fromJSON;
     });
