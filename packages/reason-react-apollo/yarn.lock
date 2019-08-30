@@ -78,6 +78,11 @@ react@>=16.8.1:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
+reason-future@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/reason-future/-/reason-future-2.5.0.tgz#52d91a343f65c6d527cd1cca4685bbc097971c68"
+  integrity sha512-rzrMQlRfQYlyiryQQJfgj04IEUN1Eau4JLnorlEVSm6Yxp2Kq6no3p+dWCocz5BLR9wIFPnSFMloLNP4ErK6ag==
+
 reason-react@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/reason-react/-/reason-react-0.7.0.tgz#46a975c321e81cd51310d7b1a02418ca7667b0d6"

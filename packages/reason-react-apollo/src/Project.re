@@ -7,6 +7,7 @@ let mapEmptyObject = (data: Js.Json.t) => {
 module type ProjectConfig = {
   type query;
   type mutation;
+  type graphQLError;
   let parseQuery: Js.Json.t => query;
   let parseMutation: Js.Json.t => mutation;
 };
@@ -26,9 +27,24 @@ module type MutationConfig = {
 module Make = (Config: ProjectConfig) => {
   include ApolloTypes;
 
+  /* Apollo Promises reject with an ApolloError. This let's us map them
+     to the correct type. */
+  external mapPromiseErrorToApolloError: Js.Promise.error => apolloErrorJs =
+    "%identity";
+
+  /* Allows for typing the project's GraphQL errors in whatever way works best
+     for that project */
+  external mapGraphQLError: graphqlError => Config.graphQLError = "%identity";
+
+  type apolloError = {
+    message: string,
+    graphQLErrors: option(array(Config.graphQLError)),
+    networkError: option(Js.Exn.t),
+  };
+
   type apolloQueryResult = {
     data: option(Config.query),
-    errors: option(array(graphqlError)),
+    errors: option(array(Config.graphQLError)),
     loading: bool,
     networkStatus,
     stale: bool,
@@ -44,7 +60,7 @@ module Make = (Config: ProjectConfig) => {
 
   type executionResult = {
     data: option(Config.mutation),
-    errors: option(array(graphqlError)),
+    errors: option(array(Config.graphQLError)),
   };
 
   type mutationResult = {
@@ -54,10 +70,24 @@ module Make = (Config: ProjectConfig) => {
     called: bool,
   };
 
+  let mapApolloError: apolloErrorJs => apolloError =
+    jsErr => {
+      message: jsErr##message,
+      graphQLErrors:
+        jsErr##graphQLErrors
+        ->Js.Undefined.toOption
+        ->Belt.Option.map(arr => arr->Belt.Array.map(mapGraphQLError)),
+      networkError: jsErr##networkError->Js.Undefined.toOption,
+    };
+
+  let mapOnCompleted = (oc, jsData: Js.Json.t) =>
+    oc(jsData->Config.parseQuery);
+
+  let mapOnError = (oe, jsError: apolloErrorJs) =>
+    oe(jsError->mapApolloError);
+
   module MakeQuery = (QueryConfig: QueryConfig) => {
     include QueryConfig;
-    let mapOnCompleted = (oc, jsData: Js.Json.t) =>
-      oc(jsData->Config.parseQuery);
 
     let useQuery =
         (
@@ -97,7 +127,9 @@ module Make = (Config: ProjectConfig) => {
           ~onCompleted=?{
             onCompleted->Belt.Option.map(mapOnCompleted);
           },
-          ~onError?,
+          ~onError=?{
+            onError->Belt.Option.map(mapOnError);
+          },
           (),
         );
       let response =
@@ -109,7 +141,10 @@ module Make = (Config: ProjectConfig) => {
           ->Belt.Option.flatMap(mapEmptyObject)
           ->Belt.Option.map(Config.parseQuery),
         loading: response##loading,
-        error: Js.Undefined.toOption(response##error),
+        error:
+          response##error
+          ->Js.Undefined.toOption
+          ->Belt.Option.map(mapApolloError),
         variables: response##variables->QueryConfig.parse,
         networkStatus: response##networkStatus,
       };
@@ -147,16 +182,24 @@ module Make = (Config: ProjectConfig) => {
             ->Js.Undefined.fromOption,
           "optimisticResponse": Js.Undefined.empty,
         })
-        |> Js.Promise.then_(jsResponse =>
-             Js.Promise.resolve({
-               data:
-                 jsResponse##data
-                 ->Js.Undefined.toOption
-                 ->Belt.Option.flatMap(mapEmptyObject)
-                 ->Belt.Option.map(Config.parseMutation),
-               errors: jsResponse##errors->Js.Undefined.toOption,
-             })
-           );
+        ->FutureJs.fromPromise(err =>
+            err->mapPromiseErrorToApolloError->mapApolloError
+          )
+        ->Future.mapOk(jsResponse =>
+            {
+              data:
+                jsResponse##data
+                ->Js.Undefined.toOption
+                ->Belt.Option.flatMap(mapEmptyObject)
+                ->Belt.Option.map(Config.parseMutation),
+              errors:
+                jsResponse##errors
+                ->Js.Undefined.toOption
+                ->Belt.Option.map(arr =>
+                    arr->Belt.Array.map(mapGraphQLError)
+                  ),
+            }
+          );
       };
       (
         mutate,
@@ -166,7 +209,10 @@ module Make = (Config: ProjectConfig) => {
             ->Js.Undefined.toOption
             ->Belt.Option.flatMap(mapEmptyObject)
             ->Belt.Option.map(Config.parseMutation),
-          error: responseJs##error->Js.Undefined.toOption,
+          error:
+            responseJs##error
+            ->Js.Undefined.toOption
+            ->Belt.Option.map(mapApolloError),
           loading: responseJs##loading,
           called: responseJs##called,
         }: mutationResult,

@@ -6,14 +6,15 @@ type apolloLink;
 type apolloCache;
 type context;
 type data = Js.Json.t;
-type graphqlError;
 type networkStatus;
 
-type apolloError = {
+type graphqlError;
+
+type apolloErrorJs = {
   .
   "message": string,
-  "graphQLErrors": array(graphqlError),
-  "networkError": Js.Nullable.t(Js.Exn.t),
+  "graphQLErrors": Js.Undefined.t(array(graphqlError)),
+  "networkError": Js.Undefined.t(Js.Exn.t),
 };
 
 [@bs.deriving abstract]
@@ -47,7 +48,7 @@ type queryHookOptions = {
   [@bs.optional]
   onCompleted: data => unit,
   [@bs.optional]
-  onError: apolloError => unit,
+  onError: apolloErrorJs => unit,
 };
 
 type queryHook;
@@ -65,7 +66,7 @@ type queryResultJs('data, 'variables) = {
   .
   "data": Js.Undefined.t('data),
   "loading": bool,
-  "error": Js.Undefined.t(apolloError),
+  "error": Js.Undefined.t(apolloErrorJs),
   "variables": 'variables,
   "networkStatus": networkStatus,
   "refetch": 'variables => Js.Promise.t(apolloQueryResultJs('data)),
@@ -98,7 +99,7 @@ type executionResultJs = {
 type mutationResultJs('data) = {
   .
   "data": Js.Undefined.t('data),
-  "error": Js.Undefined.t(apolloError),
+  "error": Js.Undefined.t(apolloErrorJs),
   "loading": bool,
   "called": bool,
   "client": Js.Undefined.t(apolloClient),
