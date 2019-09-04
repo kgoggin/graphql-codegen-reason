@@ -145,9 +145,78 @@ module Make = (Config: ProjectConfig) => {
           response##error
           ->Js.Undefined.toOption
           ->Belt.Option.map(mapApolloError),
-        variables: response##variables->QueryConfig.parse,
+        variables: response##variables,
         networkStatus: response##networkStatus,
       };
+    };
+
+    let useLazyQuery =
+        (
+          ~query as overrideQuery: option(documentNode)=?,
+          ~displayName: option(string)=?,
+          ~variables: option(QueryConfig.variables)=?,
+          ~fetchPolicy: option(watchQueryFetchPolicy)=?,
+          ~errorPolicy: option(errorPolicy)=?,
+          ~pollInterval: option(int)=?,
+          ~client: option(apolloClient)=?,
+          ~notifyOnNetworkStatusChange: option(bool)=?,
+          ~context: option(context)=?,
+          ~partialRefetch: option(bool)=?,
+          ~returnPartialData: option(bool)=?,
+          ~ssr: option(bool)=?,
+          ~onCompleted: option(Config.query => unit)=?,
+          ~onError: option(apolloError => unit)=?,
+          (),
+        ) => {
+      let opt =
+        lazyQueryHookOptions(
+          ~displayName?,
+          ~variables=?{
+            variables->Belt.Option.map(QueryConfig.parse);
+          },
+          ~fetchPolicy?,
+          ~errorPolicy?,
+          ~pollInterval?,
+          ~client?,
+          ~notifyOnNetworkStatusChange?,
+          ~context?,
+          ~partialRefetch?,
+          ~returnPartialData?,
+          ~ssr?,
+          ~onCompleted=?{
+            onCompleted->Belt.Option.map(mapOnCompleted);
+          },
+          ~onError=?{
+            onError->Belt.Option.map(mapOnError);
+          },
+          (),
+        );
+      let (fireQueryJs, response) =
+        useLazyQuery(overrideQuery->Belt.Option.getWithDefault(query), opt);
+      let fireQuery = (~variables: option(QueryConfig.variables)=?, ()) =>
+        fireQueryJs({
+          "variables":
+            variables
+            ->Belt.Option.map(QueryConfig.parse)
+            ->Js.Undefined.fromOption,
+        });
+      (
+        fireQuery,
+        {
+          data:
+            response##data
+            ->Js.Undefined.toOption
+            ->Belt.Option.flatMap(mapEmptyObject)
+            ->Belt.Option.map(Config.parseQuery),
+          loading: response##loading,
+          error:
+            response##error
+            ->Js.Undefined.toOption
+            ->Belt.Option.map(mapApolloError),
+          variables: response##variables,
+          networkStatus: response##networkStatus,
+        },
+      );
     };
   };
 

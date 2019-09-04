@@ -51,7 +51,42 @@ type queryHookOptions = {
   onError: apolloErrorJs => unit,
 };
 
-type queryHook;
+[@bs.deriving abstract]
+type lazyQueryHookOptions = {
+  [@bs.optional]
+  query: documentNode,
+  [@bs.optional]
+  displayName: string,
+  [@bs.optional]
+  variables: Js.Json.t,
+  [@bs.optional]
+  fetchPolicy: watchQueryFetchPolicy,
+  [@bs.optional]
+  errorPolicy,
+  [@bs.optional]
+  pollInterval: int,
+  [@bs.optional]
+  client: apolloClient,
+  [@bs.optional]
+  notifyOnNetworkStatusChange: bool,
+  [@bs.optional]
+  context,
+  [@bs.optional]
+  partialRefetch: bool,
+  [@bs.optional]
+  returnPartialData: bool,
+  [@bs.optional]
+  ssr: bool,
+  [@bs.optional]
+  onCompleted: data => unit,
+  [@bs.optional]
+  onError: apolloErrorJs => unit,
+};
+
+type queryLazyOptions('variables) = {
+  .
+  "variables": Js.Undefined.t('variables),
+};
 
 type apolloQueryResultJs('data) = {
   .
@@ -108,6 +143,12 @@ type mutationResultJs('data) = {
 [@bs.module "@apollo/react-hooks"]
 external useQuery:
   (documentNode, queryHookOptions) => queryResultJs('data, 'variables) =
+  "useQuery";
+
+[@bs.module "@apollo/react-hooks"]
+external useLazyQuery:
+  (documentNode, lazyQueryHookOptions) =>
+  (queryLazyOptions('variables) => unit, queryResultJs('data, 'variables)) =
   "useQuery";
 
 [@bs.module "@apollo/react-hooks"]
