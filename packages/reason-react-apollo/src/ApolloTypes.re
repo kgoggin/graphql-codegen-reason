@@ -149,7 +149,7 @@ external useQuery:
 external useLazyQuery:
   (documentNode, lazyQueryHookOptions) =>
   (queryLazyOptions('variables) => unit, queryResultJs('data, 'variables)) =
-  "useQuery";
+  "useLazyQuery";
 
 [@bs.module "@apollo/react-hooks"]
 external useMutation:
