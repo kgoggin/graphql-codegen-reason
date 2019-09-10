@@ -75,9 +75,9 @@ module Make = (Config: ProjectConfig) => {
       message: jsErr##message,
       graphQLErrors:
         jsErr##graphQLErrors
-        ->Js.Undefined.toOption
+        ->Js.Null_undefined.toOption
         ->Belt.Option.map(arr => arr->Belt.Array.map(mapGraphQLError)),
-      networkError: jsErr##networkError->Js.Undefined.toOption,
+      networkError: jsErr##networkError->Js.Null_undefined.toOption,
     };
 
   let mapOnCompleted = (oc, jsData: Js.Json.t) =>

@@ -13,8 +13,8 @@ type graphqlError;
 type apolloErrorJs = {
   .
   "message": string,
-  "graphQLErrors": Js.Undefined.t(array(graphqlError)),
-  "networkError": Js.Undefined.t(Js.Exn.t),
+  "graphQLErrors": Js.Null_undefined.t(array(graphqlError)),
+  "networkError": Js.Null_undefined.t(Js.Exn.t),
 };
 
 [@bs.deriving abstract]

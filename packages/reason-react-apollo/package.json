@@ -1,6 +1,6 @@
 {
   "name": "reason-react-apollo",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.7",
   "dependencies": {
     "@apollo/react-hooks": "^3.0.0",
     "bs-platform": "^5.0.6",
