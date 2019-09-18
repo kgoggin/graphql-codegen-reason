@@ -3,7 +3,7 @@ id: using-queries
 title: Working With Queries
 ---
 
-> The following assumes you have configured your project to use codegen as descrived in [Configuring Codegen](configuring-codegen.md);
+> The following assumes you have configured your project to use codegen as descrived in [Configuring Codegen](setting-up.md);
 
 ## Generated Query Modules
 

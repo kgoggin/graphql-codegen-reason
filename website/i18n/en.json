@@ -5,33 +5,22 @@
     "previous": "Previous",
     "tagline": "A website for testing",
     "docs": {
-      "doc1": {
-        "title": "Latin-ish",
-        "sidebar_label": "Example Page"
+      "setting-up": {
+        "title": "Configuring Codegen",
+        "sidebar_label": "Configuring Codegen"
       },
-      "doc2": {
-        "title": "document number 2"
+      "using-queries": {
+        "title": "Working With Queries"
       },
-      "doc3": {
-        "title": "This is document number 3"
-      },
-      "doc4": {
-        "title": "Other Document"
-      },
-      "doc5": {
-        "title": "Fifth Document"
+      "overview": {
+        "title": "Overview"
       }
     },
     "links": {
-      "Docs": "Docs",
-      "API": "API",
-      "Help": "Help",
-      "Blog": "Blog"
+      "Getting Started": "Getting Started"
     },
     "categories": {
-      "Docusaurus": "Docusaurus",
-      "First Category": "First Category",
-      "Second Category": "Second Category"
+      "Getting Started": "Getting Started"
     }
   },
   "pages-strings": {
