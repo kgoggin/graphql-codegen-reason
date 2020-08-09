@@ -86,7 +86,7 @@ Enums get typed using `[@bs.deriving jsConverter]`.
 
 ## Why not use graphql-ppx?
 
-[graphql-ppx](https://github.com/mhallin/graphql_ppx) is a pretty awesome library that performs compule-time transforms of your actual GraphQL queries to generate a type that's specific _to that query_. It's great for what it does, but it doesn't allow for shared types that get defined in one place and are shared across your codebase, as each query generates its own type (even if you're fetching the same underlying GraphQL types).
+[graphql-ppx](https://github.com/mhallin/graphql_ppx) is a pretty awesome library that performs compile-time transforms of your actual GraphQL queries to generate a type that's specific _to that query_. It's great for what it does, but it doesn't allow for shared types that get defined in one place and are shared across your codebase, as each query generates its own type (even if you're fetching the same underlying GraphQL types).
 
 This plugin provides a 1:1 relationship between your GraphQL types and your Reason types. In a large codebase, this can be a lot easier to reason (pardon the pun) about.
 
